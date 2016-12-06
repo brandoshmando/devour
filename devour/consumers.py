@@ -22,6 +22,11 @@ class DevourConsumer(object):
             if not getattr(self, req, None):
                 raise AttributeError("%s must declare a consumer_%s attrubute." % (self.__class__.__name__, req))
 
+        if not callable(getattr(self, self.get_digest(), None)):
+            raise NotImplementedError(
+                '{0} must be a function on {1}'.format(self.get_digest(), self.__class__.__name__)
+            )
+
         self.consumer = None
 
     def _configure(self, client_config):

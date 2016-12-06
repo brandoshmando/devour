@@ -9,6 +9,9 @@ class TestSimpleConsumer(TestCase, DevourTestMixin):
             {
                 'consumer_topic':'topic',
                 'consumer_type':'simple_consumer'
+            },
+            {
+                'digest': mock.MagicMock()
             }
         )
 
@@ -101,4 +104,30 @@ class TestSimpleConsumer(TestCase, DevourTestMixin):
                 mock.call(messages[0]),
                 mock.call(messages[1])
             ]
+        )
+
+    def test_digest_not_implemented_default(self):
+        cls = self.generate_subclass(
+            {
+                'consumer_topic':'topic',
+                'consumer_type':'simple_consumer'
+            }
+        )
+
+        self.assertRaises(
+            NotImplementedError,
+            cls
+        )
+
+    def test_digest_not_implemented_custom(self):
+        cls = self.generate_subclass(
+            {
+                'consumer_topic':'topic',
+                'consumer_type':'simple_consumer'
+            }
+        )
+
+        self.assertRaises(
+            NotImplementedError,
+            cls
         )
