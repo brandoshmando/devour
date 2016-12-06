@@ -36,8 +36,8 @@ class DevourConsumer(object):
             topic = client.topics[self.topic]
 
             self.consumer = getattr(topic, 'get_{0}'.format(self.type), None)()
-        except:
-            pass
+        except Exception, e:
+            raise e
 
         return True
 
