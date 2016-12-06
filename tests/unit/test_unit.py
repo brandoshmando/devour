@@ -3,16 +3,40 @@ from unittest import TestCase
 from devour.consumers import DevourConsumer
 from test_utils import DevourTestMixin
 
-class TestConsumer(TestCase, DevourTestMixin):
-    def test_consumer__init__(self):
+class TestSimpleConsumer(TestCase, DevourTestMixin):
+    def setUp(self):
+        self.success = self.generate_subclass(
+            {
+                'consumer_topic':'topic',
+                'consumer_type':'simple_consumer'
+            }
+        )
+
+        self.failure_one = self.generate_subclass(
+            {'consumer_type': 'simple_consumer'}
+        )
+
+        self.failure_two = self.generate_subclass(
+            {'consumer_topic': 'topic'}
+        )
+
+        self.digest = mock.MagicMock()
+
+        self.cls = self.generate_subclass(
+            {
+                'consumer_topic':'topic',
+                'consumer_type':'simple_consumer'
+            },
+            {
+                'digest': self.digest
+            }
+        )()
+
+
+    def test_consumer_init(self):
         #successful
         try:
-            new = self.generate_subclass(
-                {
-                    'consumer_topic':'topic',
-                    'consumer_type':'simple_consumer'
-                }
-            )
+            new = self.success()
         except Exception, e:
             raise AssertionError(
                 'Unsuccessful init when successful init expected: {0}{1}'.format(e.__class__.__name__, str(e))
@@ -21,17 +45,13 @@ class TestConsumer(TestCase, DevourTestMixin):
         #missing topic
         self.assertRaises(
             AttributeError,
-            self.generate_subclass(
-                {'consumer_type': 'simple_consumer'}
-            )
+            self.failure_one
         )
 
         #missing type
         self.assertRaises(
             AttributeError,
-            self.generate_subclass(
-                {'consumer_topic': 'topic'}
-            )
+            self.failure_two
         )
 
     @mock.patch('devour.consumers.pykafka.KafkaClient')
@@ -41,19 +61,6 @@ class TestConsumer(TestCase, DevourTestMixin):
         mocked_topic = mock.MagicMock()
         mocked_client.return_value.topics.__getitem__.return_value = mocked_topic
 
-        def digest(self):
-            pass
-
-        cls = self.generate_subclass(
-            {
-                'consumer_topic':'topic',
-                'consumer_type':'simple_consumer'
-            },
-            {
-                'digest': digest
-            }
-        )()
-
         config = {
             "client_config":{
                 "hosts":"fakehost:fakeport",
@@ -61,14 +68,10 @@ class TestConsumer(TestCase, DevourTestMixin):
             }
         }
 
-        ret = cls._configure(**config)
-
-        self.assertIsNotNone(cls.consumer)
-        self.assertTrue(ret)
+        self.assertTrue(self.cls._configure(**config))
         mocked_client.assert_called_once_with(hosts='fakehost:fakeport', ssl_config=None)
         mocked_client.return_value.topics.__getitem__.assert_called_once_with('topic')
         mocked_topic.get_simple_consumer.assert_called_once()
-
 
     @mock.patch('devour.consumers.pykafka.KafkaClient')
     def test_basic_consumption(self, mocked_client):
@@ -82,18 +85,6 @@ class TestConsumer(TestCase, DevourTestMixin):
         mocked_topic.get_simple_consumer.return_value = self.generate_mocked_consumer(messages)
         mocked_client.return_value.topics.__getitem__.return_value = mocked_topic
 
-        digest = mock.MagicMock()
-
-        cls = self.generate_subclass(
-            {
-                'consumer_topic':'topic',
-                'consumer_type':'simple_consumer'
-            },
-            {
-                'digest': digest
-            }
-        )()
-
         config = {
             "client_config":{
                 "hosts":"fakehost:fakeport",
@@ -101,12 +92,11 @@ class TestConsumer(TestCase, DevourTestMixin):
             }
         }
 
-        self.assertTrue(cls._configure(**config))
-
-        ret = cls._consume()
+        self.assertTrue(self.cls._configure(**config))
+        ret = self.cls._consume()
         self.assertFalse(ret)
 
-        digest.assert_has_calls(
+        self.digest.assert_has_calls(
             [
                 mock.call(messages[0]),
                 mock.call(messages[1])
