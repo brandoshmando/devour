@@ -1,0 +1,11 @@
+devour/__init__.py
+devour/consumers.py
+devour/exceptions.py
+devour/utils.py
+devour.egg-info/PKG-INFO
+devour.egg-info/SOURCES.txt
+devour.egg-info/dependency_links.txt
+devour.egg-info/not-zip-safe
+devour.egg-info/requires.txt
+devour.egg-info/top_level.txt
+devour/bin/devour.py

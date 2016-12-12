@@ -1,6 +1,5 @@
 import mock
 from unittest import TestCase
-from devour.consumers import DevourConsumer
 from test_utils import DevourTestMixin
 
 class TestSimpleConsumer(TestCase, DevourTestMixin):

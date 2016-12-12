@@ -11,6 +11,7 @@ setup(
     install_requires=[
         'pykafka',
     ],
+    scripts=['devour/bin/devour.py'],
     include_package_data=True,
     test_suite='nose.collector',
     tests_require=['nose'],
