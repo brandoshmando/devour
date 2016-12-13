@@ -1,4 +1,5 @@
 import pykafka
+from devour import exceptions
 
 class DevourConsumer(object):
 
@@ -9,22 +10,23 @@ class DevourConsumer(object):
         :consumer_type: - type of pykafka consumer to use. simple_consumer or balanced_consumer
         """
 
+        self.topic = getattr(self, 'consumer_topic', None)
+        self.type = getattr(self, 'consumer_type', None)
+        self.digest_name = getattr(self, 'consumer_digest', 'digest')
+        self.digest = getattr(self, self.digest_name,None)
+
         required = [
             'topic',
             'type'
         ]
 
-        self.topic = getattr(self, 'consumer_topic', None)
-        self.type = getattr(self, 'consumer_type', None)
-        self.digest_name = getattr(self, 'consumer_digest', None) or 'digest'
-
         for req in required:
             if not getattr(self, req, None):
                 raise AttributeError("%s must declare a consumer_%s attrubute." % (self.__class__.__name__, req))
 
-        if not callable(getattr(self, self.get_digest(), None)):
+        if not callable(self.digest):
             raise NotImplementedError(
-                '{0} must be a function on {1}'.format(self.get_digest(), self.__class__.__name__)
+                '{0} must be a function on {1}'.format(self.digest_name, self.__class__.__name__)
             )
 
         self.consumer = None
@@ -47,14 +49,9 @@ class DevourConsumer(object):
         return True
 
     def _consume(self):
-        #check configured has been called (self.consumer not None)
-        #and check for digest implementation here
-        # begin loop and pass messages into digest
+        if self.consumer is None:
+            raise exceptions.DevourConfigException('_configure must be called before _consume')
+
         for m in self.consumer:
             if m is not None:
-                getattr(self, self.get_digest(), None)(m.value)
-
-    def get_digest(self):
-        # overwritable if extra logic is needed.  must return str
-        # name of function to be used in self._consume()
-        return self.digest_name
+                self.digest(m.value)

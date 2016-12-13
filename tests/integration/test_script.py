@@ -1,6 +1,7 @@
 import mock
 import argparse
 from unittest import TestCase
+from devour import exceptions
 from devour.bin.devour import parse_args
 
 class TestScript(TestCase):

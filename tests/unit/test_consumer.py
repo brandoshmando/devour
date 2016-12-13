@@ -1,5 +1,6 @@
 import mock
 from unittest import TestCase
+from devour import exceptions
 from test_utils import DevourTestMixin
 
 class TestSimpleConsumer(TestCase, DevourTestMixin):
@@ -129,4 +130,20 @@ class TestSimpleConsumer(TestCase, DevourTestMixin):
         self.assertRaises(
             NotImplementedError,
             cls
+        )
+
+    def test_config_fails_before_config(self):
+        cls = self.generate_subclass(
+            {
+                'consumer_topic':'topic',
+                'consumer_type':'simple_consumer'
+            },
+            {
+                'digest':mock.MagicMock()
+            }
+        )()
+
+        self.assertRaises(
+            exceptions.DevourConfigException,
+            cls._consume
         )
