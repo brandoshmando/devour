@@ -51,7 +51,9 @@ class DevourConsumer(object):
             topic = client.topics[self.topic]
             self.consumer = getattr(topic, 'get_{0}'.format(self.type), None)()
         except AttributeError:
-            raise exceptions.DevourConfigException('consumer_topic %s not one of simple_consumer or balanced_consumer')
+            raise exceptions.DevourConfigException('consumer_topic %s not one of simple_consumer or balanced_consumer' % self.type)
+        except KeyError:
+            raise exceptions.DevourConfigException('topic %s does not exist on current kafka cluster' % self.topic)
 
         return True
 
