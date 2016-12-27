@@ -1,6 +1,18 @@
 import os, sys, argparse
 from .. import exceptions
 from ..utils.loaders import load_module, load_consumer_class
+from .schemas import CONFIG_SCHEMA
+
+def validate_config(config):
+    for attr,req in CONFIG_SCHEMA.items():
+        value = config.get(attr)
+        if value:
+            if not isinstance(value, req['type']):
+                raise exceptions.DevourConfigException('%s is not of type %s' % (attr, req['type']))
+        else:
+            if req['required']:
+                raise exceptions.DevourConfigException('value for %s is required in DEVOUR_CONFIG' % attr)
+    return True
 
 def parse_args(args):
     p = argparse.ArgumentParser()
