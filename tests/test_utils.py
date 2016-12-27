@@ -14,23 +14,6 @@ class DevourTestMixin(object):
         """
 
         name = "TestDevourConsumer"
-        argnames = [
-            'consumer_topic',
-            'consumer_type',
-            'consumer_digest',
-            'consumer'
-        ]
-
-        for key,val in attrs.items():
-            if key not in argnames:
-                raise TypeError(' {0} is not a valid argname for generating test consumer'.format(key))
-            elif not isinstance(val, str):
-                raise TypeError('value for attr {0} must be string'.format(key))
-
-        for key,val in funcs.items():
-            if not callable(val):
-                raise TypeError('value for func {0} must be function'.format(key))
-
         attrs.update(funcs)
         subclass = type(name, (DevourConsumer,), attrs)
         return subclass

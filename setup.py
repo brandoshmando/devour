@@ -11,10 +11,13 @@ setup(
     install_requires=[
         'pykafka',
     ],
-    scripts=['devour/bin/devour'],
     include_package_data=True,
     test_suite='nose.collector',
     tests_require=['nose'],
     zip_safe=False,
-
+    entry_points={
+        'base_script': [
+            'devour = devour.bin.devour:main'
+        ]
+    },
 )

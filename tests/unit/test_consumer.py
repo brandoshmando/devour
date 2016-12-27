@@ -28,7 +28,8 @@ class TestSimpleConsumer(TestCase, DevourTestMixin):
         self.cls = self.generate_subclass(
             {
                 'consumer_topic':'topic',
-                'consumer_type':'simple_consumer'
+                'consumer_type':'simple_consumer',
+                'dump_raw': True
             },
             {
                 'digest': self.digest

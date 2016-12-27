@@ -1,8 +1,6 @@
-#!/usr/bin/python
-
 import os, sys, argparse
-from devour import exceptions
-from devour.utils.loaders import load_module, load_consumer_class
+from .. import exceptions
+from ..utils.loaders import load_module, load_consumer_class
 
 def parse_args(args):
     p = argparse.ArgumentParser()
