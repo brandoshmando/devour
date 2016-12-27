@@ -1,6 +1,7 @@
 from pykafka.common import OffsetType
 
 SIMPLE_CONSUMER_SCHEMA = {
+    'consumer_group':            {'type': bytes, 'required': False},
     'fetch_message_max_bytes':   {'type': int, 'required': False},
     'num_consumer_fetchers':     {'type': int, 'required': False},
     'auto_commit_enable':        {'type': bool, 'required': False},

@@ -163,7 +163,29 @@ class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):
             }
         )()
 
-    #test arg validations / setattr
+    #test arg validations
+    @mock.patch('devour.consumers.pykafka.KafkaClient')
+    def test_consumer_group(self, mocked_client):
+        mocked_client.reset_mock()
+        mocked_topic = mock.MagicMock()
+        mocked_client.return_value.topics.__getitem__.return_value = mocked_topic
+
+        arg_dict = {
+            'consumer_group': bytes('fakename')
+        }
+
+        # valid
+        ret = self.cls._validate_config(arg_dict, 'simple_consumer')
+        self.assertTrue(ret)
+        # invalid
+        arg_dict['consumer_group'] = 1
+        self.assertRaises(
+            exceptions.DevourConsumerException,
+            self.cls._validate_config,
+            config=arg_dict,
+            consumer_type='simple_consumer'
+        )
+
     @mock.patch('devour.consumers.pykafka.KafkaClient')
     def test_fetch_message_max_bytes(self, mocked_client):
         mocked_client.reset_mock()
