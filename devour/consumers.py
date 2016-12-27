@@ -1,6 +1,6 @@
 import pykafka
 import json
-from devour import exceptions
+from devour import exceptions, schemas
 
 class DevourConsumer(object):
 
@@ -9,6 +9,14 @@ class DevourConsumer(object):
         :consumer_topic: - string name of topic to be consumed from
         :consumer_digest: - string name of the function used to manipulate kafka output
         :consumer_type: - type of pykafka consumer to use. simple_consumer or balanced_consumer
+        :consumer_config: - dictionary containing all kwargs needed to config the consumer type. Any extras
+        will be ignored
+
+        :dump_json: - bool determines if consumer loads json message.value into consumer.digest()
+        :dump_json: - bool determines if consumer dumps raw message.value into consumer.digest()
+        :dump_obj: - bool determines if consumer dumps message object into consumer.digest()
+        default behavior loads json representation of message.value and uses double star notation to
+        dump result as kwargs to consumer.digest()
         """
 
         # required attrs
@@ -16,6 +24,7 @@ class DevourConsumer(object):
         self.type = getattr(self, 'consumer_type', None)
         self.digest_name = getattr(self, 'consumer_digest', 'digest')
         self.digest = getattr(self, self.digest_name, None)
+        self.config = getattr(self, 'consumer_config', {})
 
         required = [
             'topic',
@@ -40,6 +49,9 @@ class DevourConsumer(object):
         self.consumer = None
 
     def _configure(self, client_config):
+        if self.config:
+            self._validate_config(self.config, self.type)
+
         try:
             #attempt to connect to kafka cluster
             client = pykafka.KafkaClient(
@@ -49,7 +61,7 @@ class DevourConsumer(object):
 
             #attempt to get topic
             topic = client.topics[self.topic]
-            self.consumer = getattr(topic, 'get_{0}'.format(self.type), None)()
+            self.consumer = getattr(topic, 'get_{0}'.format(self.type), None)(**self.config)
         except AttributeError:
             raise exceptions.DevourConfigException('consumer_topic %s not one of simple_consumer or balanced_consumer' % self.type)
         except KeyError:
@@ -57,18 +69,36 @@ class DevourConsumer(object):
 
         return True
 
+    def _validate_config(self, config, consumer_type):
+        try:
+            schema = getattr(schemas, consumer_type.upper() + '_SCHEMA')
+        except AttributeError:
+            # this should never happen, but...
+            raise exceptions.DevourConfigException('No schema for consumer type %s' % consumer_type)
+
+        for attr,req in schema.items():
+            value = config.get(attr)
+            if value:
+                if not isinstance(value, req['type']):
+                    raise exceptions.DevourConsumerException('%s is not of type %s' % (attr, req['type'].__name__))
+            else:
+                if req['required']:
+                    raise exceptions.DevourConsumerException('value for %s is required in consumer_config' % attr)
+
+        return True
+
     def _consume(self):
         if self.consumer is None:
             raise exceptions.DevourConfigException('_configure must be called before _consume')
 
-        # use format_digest so all logic determining format is run
+        # use _format_digest so all logic determining format is run
         # before consuming, preventing logic from running for each message
-        formatted_digest = self.format_digest()
+        formatted_digest = self._format_digest()
         for m in self.consumer:
             if m is not None:
                 formatted_digest(m)
 
-    def format_digest(self):
+    def _format_digest(self):
         # check options for digest before consuming
         # and return new function so that these checks
         # are not taking place for each message
