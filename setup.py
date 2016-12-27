@@ -16,7 +16,7 @@ setup(
     tests_require=['nose'],
     zip_safe=False,
     entry_points={
-        'base_script': [
+        'console_scripts': [
             'devour = devour.bin.devour:main'
         ]
     },
