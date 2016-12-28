@@ -56,6 +56,7 @@ class DevourConsumer(object):
             #attempt to connect to kafka cluster
             client = pykafka.KafkaClient(
                 hosts=client_config.get('hosts'),
+                zookeeper_hosts=client_config.get('zookeeper_hosts'),
                 ssl_config=client_config.get('ssl_config')
             )
 
@@ -96,7 +97,11 @@ class DevourConsumer(object):
         formatted_digest = self._format_digest()
         for m in self.consumer:
             if m is not None:
-                formatted_digest(m)
+                try:
+                    formatted_digest(m)
+                except:
+                    #TODO handle/log exceptions
+                    pass
 
     def _format_digest(self):
         # check options for digest before consuming
