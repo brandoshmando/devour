@@ -4,7 +4,7 @@ from devour import exceptions, schemas
 
 class DevourConsumer(object):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self):
         """
         :consumer_topic: - string name of topic to be consumed from
         :consumer_digest: - string name of the function used to manipulate kafka output
