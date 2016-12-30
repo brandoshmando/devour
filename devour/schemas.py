@@ -4,7 +4,7 @@ SIMPLE_CONSUMER_SCHEMA = {
     'consumer_group':            {'type': bytes, 'required': False},
     'fetch_message_max_bytes':   {'type': int, 'required': False},
     'num_consumer_fetchers':     {'type': int, 'required': False},
-    'auto_commit_enable':        {'type': bool, 'required': False},
+    'auto_commit_enable':        {'type': bool, 'required': False, 'dependents':['consumer_group']},
     'auto_commit_interval_ms':   {'type': int, 'required': False},
     'queued_max_messages':       {'type': int, 'required': False},
     'fetch_min_bytes':           {'type': int, 'required': False},

@@ -82,6 +82,11 @@ class DevourConsumer(object):
             if value:
                 if not isinstance(value, req['type']):
                     raise exceptions.DevourConsumerException('%s is not of type %s' % (attr, req['type'].__name__))
+
+                if req.get('dependents'):
+                    for dep in req['dependents']:
+                        if not config.get(dep):
+                            raise exceptions.DevourConsumerException('%s requires %s atrribute to be set' % (attr, dep))
             else:
                 if req['required']:
                     raise exceptions.DevourConsumerException('value for %s is required in consumer_config' % attr)
@@ -107,7 +112,7 @@ class DevourConsumer(object):
         # check options for digest before consuming
         # and return new function so that these checks
         # are not taking place for each message
-        # custom serialization?
+        # TODO: custom serialization?
         if self.dump_json:
             formatted = lambda m: self.digest(json.loads(m.value))
         elif self.dump_raw:

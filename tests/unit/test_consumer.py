@@ -75,7 +75,7 @@ class TestSimpleConsumerLogic(TestCase, DevourTestMixin):
         }
 
         self.assertTrue(self.cls._configure(**config))
-        mocked_client.assert_called_once_with(hosts='fakehost:fakeport', ssl_config=None)
+        mocked_client.assert_called_once_with(hosts='fakehost:fakeport', ssl_config=None, zookeeper_hosts=None)
         mocked_client.return_value.topics.__getitem__.assert_called_once_with('topic')
         mocked_topic.get_simple_consumer.assert_called_once()
 
@@ -237,6 +237,7 @@ class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):
         mocked_client.return_value.topics.__getitem__.return_value = mocked_topic
 
         arg_dict = {
+            'consumer_group': 'fakegroup',
             'auto_commit_enable': True
         }
 
@@ -245,6 +246,14 @@ class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):
         self.assertTrue(ret)
         # invalid
         arg_dict['auto_commit_enable'] = 'invalid'
+        self.assertRaises(
+            exceptions.DevourConsumerException,
+            self.cls._validate_config,
+            config=arg_dict,
+            consumer_type='simple_consumer'
+        )
+        # missing dependent
+        del arg_dict['consumer_group']
         self.assertRaises(
             exceptions.DevourConsumerException,
             self.cls._validate_config,
