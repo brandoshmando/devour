@@ -19,10 +19,12 @@ SIMPLE_CONSUMER_SCHEMA = {
     'compacted_topic':           {'type': bool, 'required': False},
     'generation_id':             {'type': int, 'required': False},
     'consumer_id':               {'type': bytes, 'required': False},
+    'log_name':                  {'type': str, 'required': False}
 }
 
-BALANCE_CONSUMER_SCHEMA = SIMPLE_CONSUMER_SCHEMA = {
-    'consumer_group':                 {'type': bytes, 'required': False},
+BALANCED_CONSUMER_SCHEMA  = {
+    'consumer_group':                 {'type': bytes, 'required': True},
+    'managed':                        {'type': bool, 'required': False},
     'fetch_message_max_bytes':        {'type': int, 'required': False},
     'num_consumer_fetchers':          {'type': int, 'required': False},
     'auto_commit_enable':             {'type': bool, 'required': False, 'dependents':['consumer_group']},
@@ -42,5 +44,6 @@ BALANCE_CONSUMER_SCHEMA = SIMPLE_CONSUMER_SCHEMA = {
     'zookeeper':                      {'type': KazooClient, 'required': False},
     'use_rdkafka':                    {'type': bool, 'required': False},
     'rebalance_backoff_ms':           {'type': int, 'required': False},
-    'rebalance_max_retries':          {'type': int, 'required': False}
+    'rebalance_max_retries':          {'type': int, 'required': False},
+    'log_name':                  {'type': str, 'required': False}
 }

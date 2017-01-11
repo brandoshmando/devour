@@ -74,7 +74,7 @@ class TestSimpleConsumerLogic(TestCase, DevourTestMixin):
             }
         }
 
-        self.assertTrue(self.cls._configure(**config))
+        self.assertTrue(self.cls.configure(**config))
         mocked_client.assert_called_once_with(hosts='fakehost:fakeport', ssl_config=None, zookeeper_hosts=None)
         mocked_client.return_value.topics.__getitem__.assert_called_once_with('topic')
         mocked_topic.get_simple_consumer.assert_called_once()
@@ -98,8 +98,8 @@ class TestSimpleConsumerLogic(TestCase, DevourTestMixin):
             }
         }
 
-        self.assertTrue(self.cls._configure(**config))
-        ret = self.cls._consume()
+        self.assertTrue(self.cls.configure(**config))
+        ret = self.cls.consume()
         self.assertFalse(ret)
 
         self.digest.assert_has_calls(
@@ -148,7 +148,7 @@ class TestSimpleConsumerLogic(TestCase, DevourTestMixin):
 
         self.assertRaises(
             exceptions.DevourConfigException,
-            cls._consume
+            cls.consume
         )
 
 class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):

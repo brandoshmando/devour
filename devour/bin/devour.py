@@ -42,8 +42,8 @@ def main():
     except KeyError:
         raise exceptions.DevourConfigException("consumer class with name '%s' not found in DEVOUR_ROUTES" % parsed.consumer_name)
 
-    cls._configure(config)
-    cls._consume()
+    cls.configure(config)
+    cls.consume()
 
     #TODO:
     # replace any command line args in config dict

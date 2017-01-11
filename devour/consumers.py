@@ -1,5 +1,6 @@
 import pykafka
 import json
+import logging
 from devour import exceptions, schemas
 
 class DevourConsumer(object):
@@ -48,9 +49,13 @@ class DevourConsumer(object):
         # internal
         self.consumer = None
 
-    def _configure(self, client_config):
+    def configure(self, client_config):
         if self.config:
             self._validate_config(self.config, self.type)
+
+        # setup log
+        log_name = self.config.pop('log_name', __name__)
+        self.logger = logging.getLogger(log_name)
 
         try:
             #attempt to connect to kafka cluster
@@ -93,9 +98,9 @@ class DevourConsumer(object):
 
         return True
 
-    def _consume(self):
+    def consume(self):
         if self.consumer is None:
-            raise exceptions.DevourConfigException('_configure must be called before _consume')
+            raise exceptions.DevourConfigException('configure must be called before consume')
 
         # use _format_digest so all logic determining format is run
         # before consuming, preventing logic from running for each message
@@ -104,9 +109,8 @@ class DevourConsumer(object):
             if m is not None:
                 try:
                     formatted_digest(m)
-                except:
-                    #TODO handle/log exceptions
-                    pass
+                except Exception as e:
+                    self.logger.exception("%s Error".format(e.__class__.__name__))
 
     def _format_digest(self):
         # check options for digest before consuming
