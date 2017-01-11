@@ -75,29 +75,6 @@ class DevourConsumer(object):
 
         return True
 
-    def _validate_config(self, config, consumer_type):
-        try:
-            schema = getattr(schemas, consumer_type.upper() + '_SCHEMA')
-        except AttributeError:
-            # this should never happen, but...
-            raise exceptions.DevourConfigException('No schema for consumer type %s' % consumer_type)
-
-        for attr,req in schema.items():
-            value = config.get(attr)
-            if value:
-                if not isinstance(value, req['type']):
-                    raise exceptions.DevourConsumerException('%s is not of type %s' % (attr, req['type'].__name__))
-
-                if req.get('dependents'):
-                    for dep in req['dependents']:
-                        if not config.get(dep):
-                            raise exceptions.DevourConsumerException('%s requires %s atrribute to be set' % (attr, dep))
-            else:
-                if req['required']:
-                    raise exceptions.DevourConsumerException('value for %s is required in consumer_config' % attr)
-
-        return True
-
     def consume(self):
         if self.consumer is None:
             raise exceptions.DevourConfigException('configure must be called before consume')
@@ -127,3 +104,26 @@ class DevourConsumer(object):
             formatted = lambda m: self.digest(**json.loads(m.value))
 
         return formatted
+
+    def _validate_config(self, config, consumer_type):
+        try:
+            schema = getattr(schemas, consumer_type.upper() + '_SCHEMA')
+        except AttributeError:
+            # this should never happen, but...
+            raise exceptions.DevourConfigException('No schema for consumer type %s' % consumer_type)
+
+        for attr,req in schema.items():
+            value = config.get(attr)
+            if value:
+                if not isinstance(value, req['type']):
+                    raise exceptions.DevourConsumerException('%s is not of type %s' % (attr, req['type'].__name__))
+
+                if req.get('dependents'):
+                    for dep in req['dependents']:
+                        if not config.get(dep):
+                            raise exceptions.DevourConsumerException('%s requires %s atrribute to be set' % (attr, dep))
+            else:
+                if req['required']:
+                    raise exceptions.DevourConsumerException('value for %s is required in consumer_config' % attr)
+
+        return True
