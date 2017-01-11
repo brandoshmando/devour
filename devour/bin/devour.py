@@ -1,6 +1,7 @@
 import os, sys, argparse
 from .. import exceptions
 from ..utils.loaders import load_module, load_consumer_class
+from ..utils.helpers import validate_config
 from .schemas import CONFIG_SCHEMA
 
 def validate_config(config):
@@ -35,6 +36,9 @@ def main():
             desc = 'DEVOUR_ROUTES'
         raise exceptions.DevourConfigException(
             'missing setting %s in %s file.' % (desc, os.basename(settings.__file__)))
+
+    #validate client config
+    validate_config(CONFIG_SCHEMA, config)
 
     try:
         # get consumer class and instantiate

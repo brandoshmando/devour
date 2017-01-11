@@ -180,7 +180,7 @@ class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):
         # invalid
         arg_dict['consumer_group'] = 1
         self.assertRaises(
-            exceptions.DevourConsumerException,
+            exceptions.DevourConfigException,
             self.cls._validate_config,
             config=arg_dict,
             consumer_type='simple_consumer'
@@ -202,7 +202,7 @@ class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):
         # invalid
         arg_dict['fetch_message_max_bytes'] = 'invalid'
         self.assertRaises(
-            exceptions.DevourConsumerException,
+            exceptions.DevourConfigException,
             self.cls._validate_config,
             config=arg_dict,
             consumer_type='simple_consumer'
@@ -224,7 +224,7 @@ class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):
         # invalid
         arg_dict['num_consumer_fetchers'] = 'invalid'
         self.assertRaises(
-            exceptions.DevourConsumerException,
+            exceptions.DevourConfigException,
             self.cls._validate_config,
             config=arg_dict,
             consumer_type='simple_consumer'
@@ -247,7 +247,7 @@ class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):
         # invalid
         arg_dict['auto_commit_enable'] = 'invalid'
         self.assertRaises(
-            exceptions.DevourConsumerException,
+            exceptions.DevourConfigException,
             self.cls._validate_config,
             config=arg_dict,
             consumer_type='simple_consumer'
@@ -255,7 +255,7 @@ class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):
         # missing dependent
         del arg_dict['consumer_group']
         self.assertRaises(
-            exceptions.DevourConsumerException,
+            exceptions.DevourConfigException,
             self.cls._validate_config,
             config=arg_dict,
             consumer_type='simple_consumer'
@@ -277,7 +277,7 @@ class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):
         # invalid
         arg_dict['auto_commit_interval_ms'] = 'invalid'
         self.assertRaises(
-            exceptions.DevourConsumerException,
+            exceptions.DevourConfigException,
             self.cls._validate_config,
             config=arg_dict,
             consumer_type='simple_consumer'
@@ -299,7 +299,7 @@ class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):
         # invalid
         arg_dict['queued_max_messages'] = 'invalid'
         self.assertRaises(
-            exceptions.DevourConsumerException,
+            exceptions.DevourConfigException,
             self.cls._validate_config,
             config=arg_dict,
             consumer_type='simple_consumer'
@@ -321,7 +321,7 @@ class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):
         # invalid
         arg_dict['fetch_min_bytes'] = 'invalid'
         self.assertRaises(
-            exceptions.DevourConsumerException,
+            exceptions.DevourConfigException,
             self.cls._validate_config,
             config=arg_dict,
             consumer_type='simple_consumer'
@@ -343,7 +343,7 @@ class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):
         # invalid
         arg_dict['fetch_wait_max_ms'] = 'invalid'
         self.assertRaises(
-            exceptions.DevourConsumerException,
+            exceptions.DevourConfigException,
             self.cls._validate_config,
             config=arg_dict,
             consumer_type='simple_consumer'
@@ -365,7 +365,7 @@ class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):
         # invalid
         arg_dict['offsets_channel_backoff_ms'] = 'invalid'
         self.assertRaises(
-            exceptions.DevourConsumerException,
+            exceptions.DevourConfigException,
             self.cls._validate_config,
             config=arg_dict,
             consumer_type='simple_consumer'
@@ -387,7 +387,7 @@ class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):
         # invalid
         arg_dict['offsets_commit_max_retries'] = 'invalid'
         self.assertRaises(
-            exceptions.DevourConsumerException,
+            exceptions.DevourConfigException,
             self.cls._validate_config,
             config=arg_dict,
             consumer_type='simple_consumer'
@@ -409,7 +409,7 @@ class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):
         # invalid
         arg_dict['auto_offset_reset'] = 'invalid'
         self.assertRaises(
-            exceptions.DevourConsumerException,
+            exceptions.DevourConfigException,
             self.cls._validate_config,
             config=arg_dict,
             consumer_type='simple_consumer'
@@ -431,7 +431,7 @@ class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):
         # invalid
         arg_dict['consumer_timeout_ms'] = 'invalid'
         self.assertRaises(
-            exceptions.DevourConsumerException,
+            exceptions.DevourConfigException,
             self.cls._validate_config,
             config=arg_dict,
             consumer_type='simple_consumer'
@@ -453,7 +453,7 @@ class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):
         # invalid
         arg_dict['auto_start'] = 'invalid'
         self.assertRaises(
-            exceptions.DevourConsumerException,
+            exceptions.DevourConfigException,
             self.cls._validate_config,
             config=arg_dict,
             consumer_type='simple_consumer'
@@ -475,7 +475,7 @@ class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):
         # invalid
         arg_dict['reset_offset_on_start'] = 'invalid'
         self.assertRaises(
-            exceptions.DevourConsumerException,
+            exceptions.DevourConfigException,
             self.cls._validate_config,
             config=arg_dict,
             consumer_type='simple_consumer'
@@ -497,7 +497,7 @@ class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):
         # invalid
         arg_dict['compacted_topic'] = 'invalid'
         self.assertRaises(
-            exceptions.DevourConsumerException,
+            exceptions.DevourConfigException,
             self.cls._validate_config,
             config=arg_dict,
             consumer_type='simple_consumer'
@@ -519,7 +519,7 @@ class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):
         # invalid
         arg_dict['generation_id'] = 'invalid'
         self.assertRaises(
-            exceptions.DevourConsumerException,
+            exceptions.DevourConfigException,
             self.cls._validate_config,
             config=arg_dict,
             consumer_type='simple_consumer'
@@ -541,7 +541,7 @@ class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):
         # invalid
         arg_dict['generation_id'] = 'invalid'
         self.assertRaises(
-            exceptions.DevourConsumerException,
+            exceptions.DevourConfigException,
             self.cls._validate_config,
             config=arg_dict,
             consumer_type='simple_consumer'

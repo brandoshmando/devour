@@ -2,6 +2,7 @@ import pykafka
 import json
 import logging
 from devour import exceptions, schemas
+from devour.utils.helpers import validate_config
 
 class DevourConsumer(object):
 
@@ -112,18 +113,4 @@ class DevourConsumer(object):
             # this should never happen, but...
             raise exceptions.DevourConfigException('No schema for consumer type %s' % consumer_type)
 
-        for attr,req in schema.items():
-            value = config.get(attr)
-            if value:
-                if not isinstance(value, req['type']):
-                    raise exceptions.DevourConsumerException('%s is not of type %s' % (attr, req['type'].__name__))
-
-                if req.get('dependents'):
-                    for dep in req['dependents']:
-                        if not config.get(dep):
-                            raise exceptions.DevourConsumerException('%s requires %s atrribute to be set' % (attr, dep))
-            else:
-                if req['required']:
-                    raise exceptions.DevourConsumerException('value for %s is required in consumer_config' % attr)
-
-        return True
+        return validate_config(schema, config)

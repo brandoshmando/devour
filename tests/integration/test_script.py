@@ -2,7 +2,9 @@ import mock
 import argparse
 from unittest import TestCase
 from devour import exceptions
-from devour.bin.devour import parse_args, validate_config
+from devour.bin.devour import parse_args
+from devour.bin.schemas import CONFIG_SCHEMA
+from devour.utils.helpers import validate_config
 
 class TestScript(TestCase):
     def test_parse_args_success(self):
@@ -29,7 +31,7 @@ class TestConfigValidation(TestCase):
             'hosts':'fakehost:fakeport'
         }
 
-        ret = validate_config(args_dict)
+        ret = validate_config(CONFIG_SCHEMA, args_dict)
         self.assertTrue(ret)
 
         # invalid
@@ -37,6 +39,7 @@ class TestConfigValidation(TestCase):
         self.assertRaises(
             exceptions.DevourConfigException,
             validate_config,
+            CONFIG_SCHEMA,
             args_dict
         )
 
@@ -44,6 +47,7 @@ class TestConfigValidation(TestCase):
         self.assertRaises(
             exceptions.DevourConfigException,
             validate_config,
+            CONFIG_SCHEMA,
             args_dict
         )
 
@@ -51,6 +55,7 @@ class TestConfigValidation(TestCase):
         self.assertRaises(
             exceptions.DevourConfigException,
             validate_config,
+            CONFIG_SCHEMA,
             args_dict
         )
 
@@ -61,7 +66,7 @@ class TestConfigValidation(TestCase):
             'zookeeper_hosts':'fakehost:fakeport'
         }
 
-        ret = validate_config(args_dict)
+        ret = validate_config(CONFIG_SCHEMA, args_dict)
         self.assertTrue(ret)
 
         # invalid
@@ -69,6 +74,7 @@ class TestConfigValidation(TestCase):
         self.assertRaises(
             exceptions.DevourConfigException,
             validate_config,
+            CONFIG_SCHEMA,
             args_dict
         )
 
@@ -79,7 +85,7 @@ class TestConfigValidation(TestCase):
             'socket_timeout_ms': 1
         }
 
-        ret = validate_config(args_dict)
+        ret = validate_config(CONFIG_SCHEMA, args_dict)
         self.assertTrue(ret)
 
         # invalid
@@ -87,6 +93,7 @@ class TestConfigValidation(TestCase):
         self.assertRaises(
             exceptions.DevourConfigException,
             validate_config,
+            CONFIG_SCHEMA,
             args_dict
         )
 
@@ -97,7 +104,7 @@ class TestConfigValidation(TestCase):
             'offsets_channel_socket_timeout_ms': 1
         }
 
-        ret = validate_config(args_dict)
+        ret = validate_config(CONFIG_SCHEMA, args_dict)
         self.assertTrue(ret)
 
         # invalid
@@ -105,6 +112,7 @@ class TestConfigValidation(TestCase):
         self.assertRaises(
             exceptions.DevourConfigException,
             validate_config,
+            CONFIG_SCHEMA,
             args_dict
         )
 
@@ -115,7 +123,7 @@ class TestConfigValidation(TestCase):
             'use_greenlets': True
         }
 
-        ret = validate_config(args_dict)
+        ret = validate_config(CONFIG_SCHEMA, args_dict)
         self.assertTrue(ret)
 
         # invalid
@@ -123,6 +131,7 @@ class TestConfigValidation(TestCase):
         self.assertRaises(
             exceptions.DevourConfigException,
             validate_config,
+            CONFIG_SCHEMA,
             args_dict
         )
 
@@ -133,7 +142,7 @@ class TestConfigValidation(TestCase):
             'exclude_internal_topics': True
         }
 
-        ret = validate_config(args_dict)
+        ret = validate_config(CONFIG_SCHEMA, args_dict)
         self.assertTrue(ret)
 
         # invalid
@@ -141,6 +150,7 @@ class TestConfigValidation(TestCase):
         self.assertRaises(
             exceptions.DevourConfigException,
             validate_config,
+            CONFIG_SCHEMA,
             args_dict
         )
 
@@ -151,7 +161,7 @@ class TestConfigValidation(TestCase):
             'source_address': 'fakehost:fakeport'
         }
 
-        ret = validate_config(args_dict)
+        ret = validate_config(CONFIG_SCHEMA, args_dict)
         self.assertTrue(ret)
 
         # invalid
@@ -159,6 +169,7 @@ class TestConfigValidation(TestCase):
         self.assertRaises(
             exceptions.DevourConfigException,
             validate_config,
+            CONFIG_SCHEMA,
             args_dict
         )
 
@@ -169,7 +180,7 @@ class TestConfigValidation(TestCase):
             'broker_version': '0.8'
         }
 
-        ret = validate_config(args_dict)
+        ret = validate_config(CONFIG_SCHEMA, args_dict)
         self.assertTrue(ret)
 
         # invalid
@@ -177,5 +188,6 @@ class TestConfigValidation(TestCase):
         self.assertRaises(
             exceptions.DevourConfigException,
             validate_config,
+            CONFIG_SCHEMA,
             args_dict
         )
