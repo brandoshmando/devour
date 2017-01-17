@@ -19,12 +19,12 @@ def test(input):
                 lstart = time.time()
                 loaded = getattr(key, v)(input)
                 lend = time.time()
-                loads_ret.append("%s: %s" % (key.__name__, str(lend-lstart)))
+                loads_ret.append("{0}: {1}".format(key.__name__, str(lend-lstart)))
             if i == 1:
                 dstart = time.time()
                 loaded = getattr(key, v)(input)
                 dend = time.time()
-                dumps_ret.append("%s: %s" % (key.__name__, str(dend-dstart)))
+                dumps_ret.append("{0}: {1}".format(key.__name__, str(dend-dstart)))
     for item in dumps_ret:
         print item
     for item in loads_ret:

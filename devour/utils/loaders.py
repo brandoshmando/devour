@@ -10,7 +10,7 @@ def load_module(path):
             __import__(path)
             mod = sys.modules[path]
         except KeyError, ImportError:
-            raise exceptions.DevourConfigException('module does not exist at path %s' % path)
+            raise exceptions.DevourConfigException('module does not exist at path {0}'.format(path))
 
         return mod
 
@@ -24,6 +24,6 @@ def load_consumer_class(path):
         try:
             cls = getattr(mod, cls_name)
         except AttributeError:
-            raise exceptions.DevourConfigException('consumer class %s is not defined' % cls_name)
+            raise exceptions.DevourConfigException('consumer class {0} is not defined'.format(cls_name))
 
         return cls

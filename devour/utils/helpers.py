@@ -22,14 +22,14 @@ def validate_config(schema, config):
         value = config.get(attr)
         if value:
             if not isinstance(value, req['type']):
-                raise exceptions.DevourConfigException('%s is not of type %s' % (attr, req['type'].__name__))
+                raise exceptions.DevourConfigException('{0} is not of type {1}'.format(attr, req['type'].__name__))
 
             if req.get('dependents'):
                 for dep in req['dependents']:
                     if not config.get(dep):
-                        raise exceptions.DevourConfigException('%s requires %s atrribute to be set' % (attr, dep))
+                        raise exceptions.DevourConfigException('{0} requires {1} atrribute to be set'.format(attr, dep))
         else:
             if req['required']:
-                raise exceptions.DevourConfigException('value for %s is required in Devour %s configuration' % (attr, schema['type']))
+                raise exceptions.DevourConfigException('value for {0} is required in Devour {1} configuration'.format(attr, schema['type']))
 
     return True

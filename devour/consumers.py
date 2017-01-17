@@ -35,7 +35,7 @@ class DevourConsumer(object):
 
         for req in required:
             if not getattr(self, req, None):
-                raise AttributeError("%s must declare a consumer_%s attrubute." % (self.__class__.__name__, req))
+                raise AttributeError("{0} must declare a consumer_{1} attrubute.".format(self.__class__.__name__, req))
 
         if not callable(self.digest):
             raise NotImplementedError(
@@ -70,9 +70,9 @@ class DevourConsumer(object):
             topic = client.topics[self.topic]
             self.consumer = getattr(topic, 'get_{0}'.format(self.type), None)(**self.config)
         except AttributeError:
-            raise exceptions.DevourConfigException('consumer_topic %s not one of simple_consumer or balanced_consumer' % self.type)
+            raise exceptions.DevourConfigException('consumer_topic {0} not one of simple_consumer or balanced_consumer'.format(self.type))
         except KeyError:
-            raise exceptions.DevourConfigException('topic %s does not exist on current kafka cluster' % self.topic)
+            raise exceptions.DevourConfigException('topic {0} does not exist on current kafka cluster'.format(self.topic))
 
         return True
 
@@ -88,7 +88,7 @@ class DevourConsumer(object):
                 try:
                     formatted_digest(m)
                 except Exception as e:
-                    self.logger.exception("%s Error".format(e.__class__.__name__))
+                    self.logger.exception("{0} Error".format(e.__class__.__name__))
 
     def _format_digest(self):
         # check options for digest before consuming
@@ -111,6 +111,6 @@ class DevourConsumer(object):
             schema = getattr(schemas, consumer_type.upper() + '_SCHEMA')
         except AttributeError:
             # this should never happen, but...
-            raise exceptions.DevourConfigException('No schema for consumer type %s' % consumer_type)
+            raise exceptions.DevourConfigException('No schema for consumer type {0}'.format(consumer_type))
 
         return validate_config(schema, config)
