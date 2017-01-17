@@ -50,6 +50,6 @@ BALANCED_CONSUMER_SCHEMA  = {
         'use_rdkafka':                    {'type': bool, 'required': False},
         'rebalance_backoff_ms':           {'type': int, 'required': False},
         'rebalance_max_retries':          {'type': int, 'required': False},
-        'log_name':                  {'type': str, 'required': False}
+        'log_name':                       {'type': str, 'required': False}
     }
 }
