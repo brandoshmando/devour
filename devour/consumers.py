@@ -3,6 +3,7 @@ import json
 import logging
 from devour import exceptions, schemas
 from devour.utils.helpers import validate_config
+from devour.handler import ClientHandler
 
 class DevourConsumer(object):
 
@@ -22,6 +23,7 @@ class DevourConsumer(object):
         """
 
         # required attrs
+        self.client = ClientHandler()
         self.topic = getattr(self, 'consumer_topic', None)
         self.type = getattr(self, 'consumer_type', None)
         self.digest_name = getattr(self, 'consumer_digest', 'digest')
@@ -58,21 +60,7 @@ class DevourConsumer(object):
         log_name = self.config.pop('log_name', __name__)
         self.logger = logging.getLogger(log_name)
 
-        try:
-            #attempt to connect to kafka cluster
-            client = pykafka.KafkaClient(
-                hosts=client_config.get('hosts'),
-                zookeeper_hosts=client_config.get('zookeeper_hosts'),
-                ssl_config=client_config.get('ssl_config')
-            )
-
-            #attempt to get topic
-            topic = client.topics[self.topic]
-            self.consumer = getattr(topic, 'get_{0}'.format(self.type), None)(**self.config)
-        except AttributeError:
-            raise exceptions.DevourConfigException('consumer_topic {0} not one of simple_consumer or balanced_consumer'.format(self.type))
-        except KeyError:
-            raise exceptions.DevourConfigException('topic {0} does not exist on current kafka cluster'.format(self.topic))
+        self.consumer = self.client.generate_consumer(self.topic, self.config, self.type)
 
         return True
 
