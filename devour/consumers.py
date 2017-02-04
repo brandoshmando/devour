@@ -1,10 +1,12 @@
 import pykafka
 import json
+import logging
 from devour import exceptions, schemas
+from devour.utils.helpers import validate_config
 
 class DevourConsumer(object):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self):
         """
         :consumer_topic: - string name of topic to be consumed from
         :consumer_digest: - string name of the function used to manipulate kafka output
@@ -33,7 +35,7 @@ class DevourConsumer(object):
 
         for req in required:
             if not getattr(self, req, None):
-                raise AttributeError("%s must declare a consumer_%s attrubute." % (self.__class__.__name__, req))
+                raise AttributeError("{0} must declare a consumer_{1} attrubute.".format(self.__class__.__name__, req))
 
         if not callable(self.digest):
             raise NotImplementedError(
@@ -48,9 +50,13 @@ class DevourConsumer(object):
         # internal
         self.consumer = None
 
-    def _configure(self, client_config):
+    def configure(self, client_config):
         if self.config:
             self._validate_config(self.config, self.type)
+
+        # setup log
+        log_name = self.config.pop('log_name', __name__)
+        self.logger = logging.getLogger(log_name)
 
         try:
             #attempt to connect to kafka cluster
@@ -64,33 +70,15 @@ class DevourConsumer(object):
             topic = client.topics[self.topic]
             self.consumer = getattr(topic, 'get_{0}'.format(self.type), None)(**self.config)
         except AttributeError:
-            raise exceptions.DevourConfigException('consumer_topic %s not one of simple_consumer or balanced_consumer' % self.type)
+            raise exceptions.DevourConfigException('consumer_topic {0} not one of simple_consumer or balanced_consumer'.format(self.type))
         except KeyError:
-            raise exceptions.DevourConfigException('topic %s does not exist on current kafka cluster' % self.topic)
+            raise exceptions.DevourConfigException('topic {0} does not exist on current kafka cluster'.format(self.topic))
 
         return True
 
-    def _validate_config(self, config, consumer_type):
-        try:
-            schema = getattr(schemas, consumer_type.upper() + '_SCHEMA')
-        except AttributeError:
-            # this should never happen, but...
-            raise exceptions.DevourConfigException('No schema for consumer type %s' % consumer_type)
-
-        for attr,req in schema.items():
-            value = config.get(attr)
-            if value:
-                if not isinstance(value, req['type']):
-                    raise exceptions.DevourConsumerException('%s is not of type %s' % (attr, req['type'].__name__))
-            else:
-                if req['required']:
-                    raise exceptions.DevourConsumerException('value for %s is required in consumer_config' % attr)
-
-        return True
-
-    def _consume(self):
+    def consume(self):
         if self.consumer is None:
-            raise exceptions.DevourConfigException('_configure must be called before _consume')
+            raise exceptions.DevourConfigException('configure must be called before consume')
 
         # use _format_digest so all logic determining format is run
         # before consuming, preventing logic from running for each message
@@ -99,15 +87,14 @@ class DevourConsumer(object):
             if m is not None:
                 try:
                     formatted_digest(m)
-                except:
-                    #TODO handle/log exceptions
-                    pass
+                except Exception as e:
+                    self.logger.exception("{0} Error".format(e.__class__.__name__))
 
     def _format_digest(self):
         # check options for digest before consuming
         # and return new function so that these checks
         # are not taking place for each message
-        # custom serialization?
+        # TODO: custom serialization?
         if self.dump_json:
             formatted = lambda m: self.digest(json.loads(m.value))
         elif self.dump_raw:
@@ -118,3 +105,12 @@ class DevourConsumer(object):
             formatted = lambda m: self.digest(**json.loads(m.value))
 
         return formatted
+
+    def _validate_config(self, config, consumer_type):
+        try:
+            schema = getattr(schemas, consumer_type.upper() + '_SCHEMA')
+        except AttributeError:
+            # this should never happen, but...
+            raise exceptions.DevourConfigException('No schema for consumer type {0}'.format(consumer_type))
+
+        return validate_config(schema, config)

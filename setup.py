@@ -10,6 +10,7 @@ setup(
     packages=['devour',],
     install_requires=[
         'pykafka',
+        'kazoo'
     ],
     include_package_data=True,
     test_suite='nose.collector',
