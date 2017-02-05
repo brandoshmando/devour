@@ -52,11 +52,11 @@ class ClientHandler(object):
             raise DevourConfigException('Client not configured properly.')
         return True
 
-    def generate_producer(topic, producer_type='simple_consumer'):
+    def generate_producer(topic, producer_type='sync_producer'):
         self._check_status()
         pass
 
-    def generate_consumer(self, topic, config, consumer_type='sync_producer'):
+    def generate_consumer(self, topic, config, consumer_type='simple_consumer'):
         self._check_status()
 
         try:
