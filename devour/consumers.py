@@ -3,7 +3,7 @@ import json
 import logging
 from devour import exceptions, schemas
 from devour.utils.helpers import validate_config
-from devour.handler import ClientHandler
+from devour.handlers import ClientHandler, ProducerHandler
 
 class DevourConsumer(object):
 
