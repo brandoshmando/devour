@@ -4,17 +4,6 @@ from ..utils.loaders import load_module, load_consumer_class
 from ..utils.helpers import validate_config
 from .schemas import CONFIG_SCHEMA
 
-def validate_config(config):
-    for attr,req in CONFIG_SCHEMA.items():
-        value = config.get(attr)
-        if value:
-            if not isinstance(value, req['type']):
-                raise exceptions.DevourConfigException('{0} is not of type {1}'.format(attr, req['type']))
-        else:
-            if req['required']:
-                raise exceptions.DevourConfigException('value for {0} is required in DEVOUR_CONFIG'.format(attr))
-    return True
-
 def parse_args(args):
     p = argparse.ArgumentParser()
     p.add_argument('consumer_name')

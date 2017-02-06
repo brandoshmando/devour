@@ -1,5 +1,5 @@
 CONFIG_SCHEMA = {
-    'type': 'consumer',
+    'type': 'client',
     'data': {
         'hosts':                             {'type': str, 'required': True},
         'zookeeper_hosts':                   {'type': str, 'required': False},
