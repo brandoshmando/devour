@@ -6,7 +6,8 @@ from devour import exceptions
 from test_utils import DevourTestMixin
 
 class TestSimpleConsumerLogic(TestCase, DevourTestMixin):
-    def setUp(self):
+    @mock.patch('devour.consumers.ClientHandler')
+    def setUp(self, mocked_client):
         self.success = self.generate_subclass(
             {
                 'consumer_topic':'topic',
@@ -38,8 +39,8 @@ class TestSimpleConsumerLogic(TestCase, DevourTestMixin):
             }
         )()
 
-
-    def test_consumer_init(self):
+    @mock.patch('devour.consumers.ClientHandler')
+    def test_consumer_init(self, mocked_client):
         #successful
         try:
             new = self.success()
@@ -109,7 +110,8 @@ class TestSimpleConsumerLogic(TestCase, DevourTestMixin):
             ]
         )
 
-    def test_digest_not_implemented_default(self):
+    @mock.patch('devour.consumers.ClientHandler')
+    def test_digest_not_implemented_default(self, mocked_client):
         cls = self.generate_subclass(
             {
                 'consumer_topic':'topic',
@@ -122,7 +124,8 @@ class TestSimpleConsumerLogic(TestCase, DevourTestMixin):
             cls
         )
 
-    def test_digest_not_implemented_custom(self):
+    @mock.patch('devour.consumers.ClientHandler')
+    def test_digest_not_implemented_custom(self, mocked_client):
         cls = self.generate_subclass(
             {
                 'consumer_topic':'topic',
@@ -135,7 +138,8 @@ class TestSimpleConsumerLogic(TestCase, DevourTestMixin):
             cls
         )
 
-    def test_config_fails_before_config(self):
+    @mock.patch('devour.consumers.ClientHandler')
+    def test_config_fails_before_config(self, mocked_client):
         cls = self.generate_subclass(
             {
                 'consumer_topic':'topic',
@@ -152,7 +156,8 @@ class TestSimpleConsumerLogic(TestCase, DevourTestMixin):
         )
 
 class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):
-    def setUp(self):
+    @mock.patch('devour.consumers.ClientHandler')
+    def setUp(self, mocked_client):
         self.cls = self.generate_subclass(
             {
                 'consumer_topic':'topic',
@@ -464,7 +469,8 @@ class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):
 
 
 class TestBalancedConsumerLogic(TestCase, DevourTestMixin):
-    def setUp(self):
+    @mock.patch('devour.consumers.ClientHandler')
+    def setUp(self, mocked_client):
         self.success = self.generate_subclass(
             {
                 'consumer_topic':'topic',
@@ -496,8 +502,8 @@ class TestBalancedConsumerLogic(TestCase, DevourTestMixin):
             }
         )()
 
-
-    def test_balanced_consumer_init(self):
+    @mock.patch('devour.consumers.ClientHandler')
+    def test_balanced_consumer_init(self, mocked_client):
         #successful
         try:
             new = self.success()
@@ -567,7 +573,8 @@ class TestBalancedConsumerLogic(TestCase, DevourTestMixin):
             ]
         )
 
-    def test_digest_not_implemented_default_balanced_consumer(self):
+    @mock.patch('devour.consumers.ClientHandler')
+    def test_digest_not_implemented_default_balanced_consumer(self, mocked_client):
         cls = self.generate_subclass(
             {
                 'consumer_topic':'topic',
@@ -580,7 +587,8 @@ class TestBalancedConsumerLogic(TestCase, DevourTestMixin):
             cls
         )
 
-    def test_digest_not_implemented_custom_balanced_consumer(self):
+    @mock.patch('devour.consumers.ClientHandler')
+    def test_digest_not_implemented_custom_balanced_consumer(self, mocked_client):
         cls = self.generate_subclass(
             {
                 'consumer_topic':'topic',
@@ -593,7 +601,8 @@ class TestBalancedConsumerLogic(TestCase, DevourTestMixin):
             cls
         )
 
-    def test_consume_fails_before_config_balanced_consumer(self):
+    @mock.patch('devour.consumers.ClientHandler')
+    def test_consume_fails_before_config_balanced_consumer(self, mocked_client):
         cls = self.generate_subclass(
             {
                 'consumer_topic':'topic',
@@ -610,7 +619,8 @@ class TestBalancedConsumerLogic(TestCase, DevourTestMixin):
         )
 
 class TestBalancedConsumerArgValidation(TestCase, DevourTestMixin):
-    def setUp(self):
+    @mock.patch('devour.consumers.ClientHandler')
+    def setUp(self, mocked_client):
         self.cls = self.generate_subclass(
             {
                 'consumer_topic':'topic',
