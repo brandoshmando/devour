@@ -1,9 +1,9 @@
 import pykafka
 import json
 import logging
+from devour.handlers import ClientHandler
 from devour import exceptions, schemas
 from devour.utils.helpers import validate_config
-from devour.handlers import ClientHandler, ProducerHandler
 
 class DevourConsumer(object):
 
@@ -23,7 +23,6 @@ class DevourConsumer(object):
         """
 
         # required attrs
-        self.client = ClientHandler()
         self.topic = getattr(self, 'consumer_topic', None)
         self.type = getattr(self, 'consumer_type', None)
         self.digest_name = getattr(self, 'consumer_digest', 'digest')
@@ -50,6 +49,7 @@ class DevourConsumer(object):
         self.dump_obj = getattr(self, 'dump_obj', False)
 
         # internal
+        self.client = None
         self.consumer = None
 
     def configure(self):
@@ -60,7 +60,8 @@ class DevourConsumer(object):
         log_name = self.config.pop('log_name', __name__)
         self.logger = logging.getLogger(log_name)
 
-        self.consumer = self.client.generate_consumer(self.topic, self.config, self.type)
+        self.client = ClientHandler()
+        self.consumer = self.client.get_consumer(self.topic, self.config, self.type)
 
         return True
 
