@@ -17,14 +17,9 @@ def main():
 
     try:
         routes = getattr(settings, 'DEVOUR_ROUTES')
-        config = getattr(settings, 'DEVOUR_CONFIG')
     except AttributeError:
-        if routes:
-            desc = 'DEVOUR_CONFIG'
-        else:
-            desc = 'DEVOUR_ROUTES'
         raise exceptions.DevourConfigException(
-            'missing setting {0} in {1} file.'.format(desc, os.basename(settings.__file__)))
+            'missing setting DEVOUR_ROUTES in {0} file.'.format(os.basename(settings.__file__)))
 
     #validate client config
     validate_config(CONFIG_SCHEMA, config)

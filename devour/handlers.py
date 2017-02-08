@@ -20,15 +20,10 @@ class ClientHandler(object):
         settings = load_module(settings_path)
 
         try:
-            routes = getattr(settings, 'DEVOUR_ROUTES')
             config = getattr(settings, 'DEVOUR_CONFIG')
         except AttributeError:
-            if routes:
-                desc = 'DEVOUR_CONFIG'
-            else:
-                desc = 'DEVOUR_ROUTES'
             raise exceptions.DevourConfigException(
-                'missing setting {0} in {1}.'.format(desc, os.basename(settings.__file__)))
+                'missing DEVOUR_CONFIG in {0}.'.format(os.basename(settings.__file__)))
 
         #validate congiuration args
         validate_config(CONFIG_SCHEMA, config)
