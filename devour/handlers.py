@@ -1,14 +1,27 @@
 import os
+import pykafka
 from threading import local
-from pykafka import KafkaClient
 from .exceptions import DevourConfigException
 from .utils.helpers import validate_config
 from .utils.loaders import load_module, load_consumer_class
+from devour.bin.schemas import  CONFIG_SCHEMA
+
+
+class TopicWrapper(object):
+    def __init__(self, client, *args, **kwargs):
+        self._client = client
+
+    def __getitem__(self, key):
+        return self._client.topics[key]
+
+    def __setitem__(self, key, value):
+        self._client.topics[key] = value
 
 
 class ProducerHandler(object):
     def __init__(self, client, *args, **kwargs):
         self._client = client
+        self._topics = client.topics
         self._producers = local()
 
     def __getitem__(self, tup):
@@ -28,39 +41,16 @@ class ProducerHandler(object):
 
         setattr(self._producers, key, value)
 
-    def __del__(self, key):
-        if hasattr(self._producers, key):
-            getattr(self._producers, key).stop()
-            del self._producers.__dict__[key]
+    def stop_all(self):
+        for prod in self._producers.__dict__.keys():
+            getattr(self._producers, prod).stop()
 
-class TopicHandler(object):
-    def __init__(self, client, *args, **kwargs):
-        self._client = client
-        self._topics = local()
-
-    def __getitem__(self, key):
-        if hasattr(self._topics, key):
-            return getattr(self._topics, key)
-
-        top = self._client.get_topic(key)
-        setattr(self._producers, key, prod)
-        return prod
-
-    def __setitem__(self, key, value):
-        if hasattr(self._producers, key):
-            getattr(self._producers, key).stop()
-
-        setattr(self._topics, key, value)
-
-    def __del__(self, key):
-        if hasattr(self.topic, key):
-            del self._topics.__dict__[key]
 
 class ClientHandler(object):
     def __init__(self, auto_start=True, *args, **kwargs):
         self._client = local()
-        self.topics = TopicHandler(self)
-        self.producers = ProducerHandler(self)
+        self.topics = None
+        self.producers = None
 
         if auto_start:
             self._configure()
@@ -77,11 +67,6 @@ class ClientHandler(object):
             del self._client.__dict__[key]
 
         setattr(self._client, key, value)
-
-    def __del__(self, key):
-        if hasattr(self._client, key):
-            del self._client.__dict__[key]
-
 
     def _configure(self, config_overrides={}):
         settings_path = os.environ.get('DEVOUR_SETTINGS') or 'settings'
@@ -110,13 +95,14 @@ class ClientHandler(object):
                 zookeeper_hosts=config.get('zookeeper_hosts'),
                 ssl_config=config.get('ssl_config')
             )
+            self.topics = TopicWrapper(self._client.pykafka)
+            self.producers = ProducerHandler(self._client.pykafka)
+
         except AttributeError:
             raise exceptions.DevourConfigException('consumer_type {0} not one of simple_consumer or balanced_consumer'.format(self.type))
         except KeyError:
             raise exceptions.DevourConfigException('topic {0} does not exist on current kafka cluster'.format(self.topic))
-
         return True
-
 
     def _check_status(self):
         ok =  hasattr(self._client, 'pykafka') or False
@@ -135,9 +121,12 @@ class ClientHandler(object):
     def generate_consumer(self, topic_name, config, consumer_type='simple_consumer'):
         self._check_status()
         topic = self.topics[topic_name]
+
         try:
             consumer = getattr(topic, 'get_{0}'.format(consumer_type), None)(**config)
         except AttributeError:
             raise exceptions.DevourConfigException('consumer_type {0} not one of simple_consumer or balanced_consumer'.format(self.type))
         except KeyError:
             raise exceptions.DevourConfigException('topic {0} does not exist on current kafka cluster'.format(self.topic))
+
+        return consumer

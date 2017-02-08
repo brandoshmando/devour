@@ -7,7 +7,7 @@ from devour.handlers import ClientHandler, ProducerHandler
 
 class DevourConsumer(object):
 
-    def __init__(self):
+    def __init__(self, auto_start=True):
         """
         :consumer_topic: - string name of topic to be consumed from
         :consumer_digest: - string name of the function used to manipulate kafka output
@@ -52,7 +52,7 @@ class DevourConsumer(object):
         # internal
         self.consumer = None
 
-    def configure(self, client_config):
+    def configure(self):
         if self.config:
             self._validate_config(self.config, self.type)
 

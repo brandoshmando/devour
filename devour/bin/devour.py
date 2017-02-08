@@ -35,7 +35,7 @@ def main():
     except KeyError:
         raise exceptions.DevourConfigException("consumer class with name '{0}' not found in DEVOUR_ROUTES".format(parsed.consumer_name))
 
-    cls.configure(config)
+    cls.configure()
     cls.consume()
 
     #TODO:
