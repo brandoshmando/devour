@@ -52,6 +52,9 @@ class DevourConsumer(object):
         self.client = None
         self.consumer = None
 
+        if auto_start:
+            self.configure()
+
     def configure(self):
         if self.config:
             self._validate_config(self.config, self.type)

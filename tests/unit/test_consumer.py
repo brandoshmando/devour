@@ -88,7 +88,7 @@ class TestSimpleConsumerLogic(TestCase, DevourTestMixin):
             {
                 'digest': self.digest
             }
-        )()
+        )(auto_start=False)
 
         self.assertTrue(cls.configure())
         mocked_client.assert_called_once_with(hosts='fakehost:fakeport', ssl_config=None, zookeeper_hosts=None)
@@ -178,7 +178,7 @@ class TestSimpleConsumerLogic(TestCase, DevourTestMixin):
             {
                 'digest':mock.MagicMock()
             }
-        )()
+        )(auto_start=False)
 
         self.assertRaises(
             exceptions.DevourConfigException,
@@ -581,7 +581,7 @@ class TestBalancedConsumerLogic(TestCase, DevourTestMixin):
             {
                 'digest': self.digest
             }
-        )()
+        )(auto_start=False)
 
         self.assertTrue(cls.configure())
         mocked_client.assert_called_once_with(hosts='fakehost:fakeport', ssl_config=None, zookeeper_hosts=None)
@@ -671,7 +671,7 @@ class TestBalancedConsumerLogic(TestCase, DevourTestMixin):
             {
                 'digest':mock.MagicMock()
             }
-        )()
+        )(auto_start=False)
 
         self.assertRaises(
             exceptions.DevourConfigException,

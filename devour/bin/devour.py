@@ -1,4 +1,4 @@
-import os, sys, argparse
+import os, sys, argparse, atexit
 from .. import exceptions
 from ..utils.loaders import load_module, load_consumer_class
 from ..utils.helpers import validate_config
@@ -35,7 +35,7 @@ def main():
     except KeyError:
         raise exceptions.DevourConfigException("consumer class with name '{0}' not found in DEVOUR_ROUTES".format(parsed.consumer_name))
 
-    cls.configure()
+    atexit.register(cls.client.stop_all_producers)
     cls.consume()
 
     #TODO:
