@@ -16,7 +16,7 @@ class ClientHandler(object):
             self._configure()
 
     def _configure(self, config_overrides={}):
-        settings_path = os.environ.get('DEVOUR_SETTINGS') or 'settings'
+        settings_path = os.environ.get('KAFKA_SETTINGS') or 'settings'
         settings = load_module(settings_path)
 
         try:

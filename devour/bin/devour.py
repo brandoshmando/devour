@@ -12,23 +12,20 @@ def parse_args(args):
 
 def main():
     parsed = parse_args(sys.argv[1:])
-    settings_path = os.environ.get('DEVOUR_SETTINGS') or 'settings'
+    settings_path = os.environ.get('KAFKA_SETTINGS') or 'settings'
     settings = load_module(settings_path)
 
     try:
-        routes = getattr(settings, 'DEVOUR_ROUTES')
+        routes = getattr(settings, 'CONSUMER_ROUTES')
     except AttributeError:
         raise exceptions.DevourConfigException(
-            'missing setting DEVOUR_ROUTES in {0} file.'.format(os.basename(settings.__file__)))
-
-    #validate client config
-    validate_config(CONFIG_SCHEMA, config)
+            'missing setting CONSUMER_ROUTES in {0} file.'.format(os.basename(settings.__file__)))
 
     try:
         # get consumer class and instantiate
         cls = load_consumer_class(routes[parsed.consumer_name])()
     except KeyError:
-        raise exceptions.DevourConfigException("consumer class with name '{0}' not found in DEVOUR_ROUTES".format(parsed.consumer_name))
+        raise exceptions.DevourConfigException("consumer class with name '{0}' not found in CONSUMER_ROUTES".format(parsed.consumer_name))
 
     atexit.register(cls.client.stop_all_producers)
     cls.consume()
