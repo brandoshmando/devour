@@ -13,13 +13,13 @@ class DevourConsumer(object):
     def __init__(self, auto_start=True):
         """
         :consumer_topic: - string name of topic to be consumed from
-        :consumer_digest: - string name of the function used to manipulate kafka output
+        :consumer_digest: - string name of the function used to manipulate kafka output, defaults to 'digest'
         :consumer_type: - type of pykafka consumer to use. simple_consumer or balanced_consumer
         :consumer_config: - dictionary containing all kwargs needed to config the consumer type. Any extras
         will be ignored
 
         :dump_json: - bool determines if consumer loads json message.value into consumer.digest()
-        :dump_json: - bool determines if consumer dumps raw message.value into consumer.digest()
+        :dump_raw: - bool determines if consumer dumps raw message.value into consumer.digest()
         :dump_obj: - bool determines if consumer dumps message object into consumer.digest()
         default behavior loads json representation of message.value and uses double star notation to
         dump result as kwargs to consumer.digest()

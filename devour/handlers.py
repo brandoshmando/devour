@@ -1,16 +1,25 @@
 import os
 import pykafka
+import atexit
 from threading import local
 from .exceptions import DevourConfigException
 from .utils.helpers import validate_config
 from .utils.loaders import load_module, load_consumer_class
 from devour.bin.schemas import  CONFIG_SCHEMA
+from devour.producers import _ProducerProxy
 
 
 class ClientHandler(object):
     def __init__(self, *args, **kwargs):
         self._client = local()
         self.producers = local()
+
+        # register exit callback
+        # this ensures all producers
+        # push all messages from it's internal
+        # queue it shuts down, thus preventing
+        # data loss
+        atexit.register(self.stop_all_producers)
 
     def _configure(self, config_overrides={}):
         settings_path = os.environ.get('KAFKA_SETTINGS') or 'settings'
@@ -49,7 +58,7 @@ class ClientHandler(object):
         formatted = '{0}__{1}'.format(topic_name, producer_type)
 
         if hasattr(self.producers, formatted):
-            return getattr(self.producers, formatted)
+            return _ProducerProxy(getattr(self.producers, formatted))
 
         topic = self.get_topic(topic_name)
         try:
@@ -59,7 +68,7 @@ class ClientHandler(object):
 
         # persist the producer
         setattr(self.producers, formatted, prod)
-        return producer
+        return _ProducerProxy(producer)
 
     def get_consumer(self, topic_name, config, consumer_type='simple_consumer'):
         self._check_status()
