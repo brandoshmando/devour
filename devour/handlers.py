@@ -48,7 +48,7 @@ class ClientHandler(object):
         self._check_status()
         return self._client.pykafka.topics[key]
 
-    def get_producer(topic_name, config, producer_type='sync_producer'):
+    def get_producer(topic_name, producer_type='sync_producer'):
         self._check_status()
         formatted = '{0}__{1}'.format(topic_name, producer_type)
 

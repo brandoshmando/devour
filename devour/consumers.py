@@ -1,5 +1,8 @@
+try:
+    import ujson as json
+except ImportError:
+    import json
 import pykafka
-import json
 import logging
 from devour.handlers import ClientHandler
 from devour import exceptions, schemas
