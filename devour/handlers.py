@@ -8,12 +8,9 @@ from devour.bin.schemas import  CONFIG_SCHEMA
 
 
 class ClientHandler(object):
-    def __init__(self, auto_start=True, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         self._client = local()
         self.producers = local()
-
-        if auto_start:
-            self._configure()
 
     def _configure(self, config_overrides={}):
         settings_path = os.environ.get('KAFKA_SETTINGS') or 'settings'
@@ -39,9 +36,8 @@ class ClientHandler(object):
         return True
 
     def _check_status(self):
-        ok =  hasattr(self._client, 'pykafka') or False
-        if not ok:
-            raise DevourConfigException('Kafka Client not configured properly.')
+        if not hasattr(self._client, 'pykafka'):
+            self._configure()
         return True
 
     def get_topic(self, key):
