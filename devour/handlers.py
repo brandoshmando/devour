@@ -51,7 +51,10 @@ class ClientHandler(object):
 
     def get_topic(self, key):
         self._check_status()
-        return self._client.pykafka.topics[key]
+        try:
+            return self._client.pykafka.topics[key]
+        except KeyError:
+            raise exceptions.DevourConfigException('topic {0} does not exist on current kafka cluster'.format(key))
 
     def get_producer(self, topic_name, producer_type='sync_producer'):
         self._check_status()
@@ -63,8 +66,8 @@ class ClientHandler(object):
         topic = self.get_topic(topic_name)
         try:
             producer = getattr(topic, 'get_' + producer_type)()
-        except:
-            pass
+        except AttributeError:
+            raise exceptions.DevourConfigException('producer_type {0} not one of sync_producer_consumer or produce'.format(producer_type))
 
         # persist the producer
         setattr(self.producers, formatted, producer)
@@ -78,8 +81,6 @@ class ClientHandler(object):
             consumer = getattr(topic, 'get_{0}'.format(consumer_type))(**config)
         except AttributeError:
             raise exceptions.DevourConfigException('consumer_type {0} not one of simple_consumer or balanced_consumer'.format(self.type))
-        except KeyError:
-            raise exceptions.DevourConfigException('topic {0} does not exist on current kafka cluster'.format(self.topic))
 
         return consumer
 
