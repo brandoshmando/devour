@@ -21,7 +21,7 @@ class ClientHandler(object):
         # data loss
         atexit.register(self.stop_all_producers)
 
-    def _configure(self, config_overrides={}):
+    def _configure(self):
         settings_path = os.environ.get('KAFKA_SETTINGS') or 'settings'
         settings = load_module(settings_path)
 
@@ -53,7 +53,7 @@ class ClientHandler(object):
         self._check_status()
         return self._client.pykafka.topics[key]
 
-    def get_producer(topic_name, producer_type='sync_producer'):
+    def get_producer(self, topic_name, producer_type='sync_producer'):
         self._check_status()
         formatted = '{0}__{1}'.format(topic_name, producer_type)
 
@@ -62,12 +62,12 @@ class ClientHandler(object):
 
         topic = self.get_topic(topic_name)
         try:
-            producer = getattr(topic, producer_type)
+            producer = getattr(topic, 'get_' + producer_type)()
         except:
             pass
 
         # persist the producer
-        setattr(self.producers, formatted, prod)
+        setattr(self.producers, formatted, producer)
         return _ProducerProxy(producer)
 
     def get_consumer(self, topic_name, config, consumer_type='simple_consumer'):
@@ -75,7 +75,7 @@ class ClientHandler(object):
         topic = self.get_topic(topic_name)
 
         try:
-            consumer = getattr(topic, 'get_{0}'.format(consumer_type), None)(**config)
+            consumer = getattr(topic, 'get_{0}'.format(consumer_type))(**config)
         except AttributeError:
             raise exceptions.DevourConfigException('consumer_type {0} not one of simple_consumer or balanced_consumer'.format(self.type))
         except KeyError:
