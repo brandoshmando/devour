@@ -12,14 +12,20 @@ def parse_args(args):
 
 def main():
     parsed = parse_args(sys.argv[1:])
-    settings_path = os.environ.get('KAFKA_SETTINGS') or 'settings'
+    settings_path = os.environ.get('KAFKA_SETTINGS_PATH') or 'settings'
     settings = load_module(settings_path)
 
     try:
-        routes = getattr(settings, 'CONSUMER_ROUTES')
+        kafka = getattr(settings, 'KAFKA_CONFIG')
+        routes = kafka['consumer_routes']
     except AttributeError:
         raise exceptions.DevourConfigException(
-            'missing setting CONSUMER_ROUTES in {0} file.'.format(os.basename(settings.__file__)))
+            'missing setting CONSUMER_ROUTES in settings.'
+        )
+    except KeyError:
+        raise DevourConfigException(
+            'missing  consumer_routes in KAFKA_CONFIG'
+        )
 
     try:
         # get consumer class and instantiate

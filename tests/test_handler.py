@@ -11,8 +11,10 @@ class TestClientHandler(TestCase):
             "ssl_config": None
         }
 
+        conf = mock.MagicMock()
+        conf.__getitem__.return_value = self.config
         self.settings = mock.MagicMock()
-        type(self.settings).DEVOUR_CONFIG = mock.PropertyMock(return_value=self.config)
+        type(self.settings).KAFKA_CONFIG = mock.PropertyMock(return_value=conf)
 
     def test_handler_init(self):
         handler = ClientHandler()
@@ -28,6 +30,8 @@ class TestClientHandler(TestCase):
     def test_check_status(self, mocked_client, mocked_load):
         mocked_client.reset_mock()
         mocked_load.reset_mock()
+        self.settings.reset_mock()
+
         mocked_load.return_value = self.settings
 
         handler = ClientHandler()
@@ -51,6 +55,13 @@ class TestClientHandler(TestCase):
     def test_get_topic(self, mocked_client, mocked_load):
         mocked_client.reset_mock()
         mocked_load.reset_mock()
+        self.settings.reset_mock()
+
+        config = {
+            "hosts":"fakehost:fakeport",
+            "ssl_config": None
+        }
+
         mocked_load.return_value = self.settings
 
         mocked_topic = mock.MagicMock()
@@ -66,6 +77,8 @@ class TestClientHandler(TestCase):
     def test_get_producer_sync(self, mocked_client, mocked_load):
         mocked_client.reset_mock()
         mocked_load.reset_mock()
+        self.settings.reset_mock()
+
         mocked_load.return_value = self.settings
 
         mocked_topic = mock.MagicMock()
@@ -101,6 +114,8 @@ class TestClientHandler(TestCase):
     def test_get_producer_async(self, mocked_client, mocked_load):
         mocked_client.reset_mock()
         mocked_load.reset_mock()
+        self.settings.reset_mock()
+
         mocked_load.return_value = self.settings
 
         mocked_topic = mock.MagicMock()
@@ -137,6 +152,8 @@ class TestClientHandler(TestCase):
     def test_get_consumer_simple(self, mocked_client, mocked_load):
         mocked_client.reset_mock()
         mocked_load.reset_mock()
+        self.settings.reset_mock()
+
         mocked_load.return_value = self.settings
 
         mocked_topic = mock.MagicMock()
@@ -152,6 +169,8 @@ class TestClientHandler(TestCase):
     def test_get_consumer_simple(self, mocked_client, mocked_load):
         mocked_client.reset_mock()
         mocked_load.reset_mock()
+        self.settings.reset_mock()
+
         mocked_load.return_value = self.settings
 
         mocked_topic = mock.MagicMock()

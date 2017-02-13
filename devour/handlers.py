@@ -22,14 +22,20 @@ class ClientHandler(object):
         atexit.register(self.stop_all_producers)
 
     def _configure(self):
-        settings_path = os.environ.get('KAFKA_SETTINGS') or 'settings'
+        settings_path = os.environ.get('KAFKA_SETTINGS_PATH') or 'settings'
         settings = load_module(settings_path)
 
         try:
-            config = getattr(settings, 'DEVOUR_CONFIG')
+            kafka = getattr(settings, 'KAFKA_CONFIG')
+            config = kafka['client']
         except AttributeError:
-            raise exceptions.DevourConfigException(
-                'missing DEVOUR_CONFIG in {0}.'.format(os.basename(settings.__file__)))
+            raise DevourConfigException(
+                'missing KAFKA_CONFIG in settings.'
+            )
+        except KeyError:
+            raise DevourConfigException(
+                'missing client settings in KAFKA_CONFIG'
+            )
 
         #validate congiuration args
         validate_config(CONFIG_SCHEMA, config)
@@ -54,7 +60,7 @@ class ClientHandler(object):
         try:
             return self._client.pykafka.topics[key]
         except KeyError:
-            raise exceptions.DevourConfigException('topic {0} does not exist on current kafka cluster'.format(key))
+            raise DevourConfigException('topic {0} does not exist on current kafka cluster'.format(key))
 
     def get_producer(self, topic_name, producer_type='sync_producer'):
         self._check_status()
@@ -67,7 +73,7 @@ class ClientHandler(object):
         try:
             producer = getattr(topic, 'get_' + producer_type)()
         except AttributeError:
-            raise exceptions.DevourConfigException('producer_type {0} not one of sync_producer_consumer or produce'.format(producer_type))
+            raise DevourConfigException('producer_type {0} not one of sync_producer_consumer or produce'.format(producer_type))
 
         # persist the producer
         setattr(self.producers, formatted, producer)
@@ -80,7 +86,7 @@ class ClientHandler(object):
         try:
             consumer = getattr(topic, 'get_{0}'.format(consumer_type))(**config)
         except AttributeError:
-            raise exceptions.DevourConfigException('consumer_type {0} not one of simple_consumer or balanced_consumer'.format(self.type))
+            raise DevourConfigException('consumer_type {0} not one of simple_consumer or balanced_consumer'.format(self.type))
 
         return consumer
 

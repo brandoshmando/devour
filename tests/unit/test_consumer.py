@@ -65,15 +65,17 @@ class TestSimpleConsumerLogic(TestCase, DevourTestMixin):
     @mock.patch('devour.handlers.pykafka.KafkaClient')
     def test_consumer_configure_simple_consumer_success(self, mocked_client, mocked_load):
         mocked_client.reset_mock()
+        mocked_load.reset_mock()
 
         config = {
             "hosts":"fakehost:fakeport",
             "ssl_config": None
         }
 
-        config = mock.PropertyMock(return_value=config)
+        conf = mock.MagicMock()
+        conf.__getitem__.return_value = config
         settings = mock.MagicMock()
-        type(settings).DEVOUR_CONFIG = config
+        type(settings).KAFKA_CONFIG = mock.PropertyMock(return_value=conf)
         mocked_load.return_value = settings
 
         mocked_topic = mock.MagicMock()
@@ -99,15 +101,17 @@ class TestSimpleConsumerLogic(TestCase, DevourTestMixin):
     @mock.patch('devour.handlers.pykafka.KafkaClient')
     def test_basic_consumption(self, mocked_client, mocked_load):
         mocked_client.reset_mock()
+        mocked_load.reset_mock()
 
         config = {
             "hosts":"fakehost:fakeport",
             "ssl_config": None
         }
 
-        config = mock.PropertyMock(return_value=config)
+        conf = mock.MagicMock()
+        conf.__getitem__.return_value = config
         settings = mock.MagicMock()
-        type(settings).DEVOUR_CONFIG = config
+        type(settings).KAFKA_CONFIG = mock.PropertyMock(return_value=conf)
         mocked_load.return_value = settings
 
         messages = [
@@ -558,15 +562,17 @@ class TestBalancedConsumerLogic(TestCase, DevourTestMixin):
     @mock.patch('devour.handlers.pykafka.KafkaClient')
     def test_configure_balanced_consumer_success(self, mocked_client, mocked_load):
         mocked_client.reset_mock()
+        mocked_load.reset_mock()
 
         config = {
             "hosts":"fakehost:fakeport",
             "ssl_config": None
         }
 
-        config = mock.PropertyMock(return_value=config)
+        conf = mock.MagicMock()
+        conf.__getitem__.return_value = config
         settings = mock.MagicMock()
-        type(settings).DEVOUR_CONFIG = config
+        type(settings).KAFKA_CONFIG = mock.PropertyMock(return_value=conf)
         mocked_load.return_value = settings
 
         mocked_topic = mock.MagicMock()
@@ -592,15 +598,17 @@ class TestBalancedConsumerLogic(TestCase, DevourTestMixin):
     @mock.patch('devour.handlers.pykafka.KafkaClient')
     def test_basic_consumption_balanced_consumer(self, mocked_client, mocked_load):
         mocked_client.reset_mock()
+        mocked_load.reset_mock()
 
         config = {
             "hosts":"fakehost:fakeport",
             "ssl_config": None
         }
 
-        config = mock.PropertyMock(return_value=config)
+        conf = mock.MagicMock()
+        conf.__getitem__.return_value = config
         settings = mock.MagicMock()
-        type(settings).DEVOUR_CONFIG = config
+        type(settings).KAFKA_CONFIG = mock.PropertyMock(return_value=conf)
         mocked_load.return_value = settings
 
         messages = [
