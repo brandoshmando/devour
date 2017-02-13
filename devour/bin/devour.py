@@ -23,7 +23,7 @@ def main():
             'missing setting CONSUMER_ROUTES in settings.'
         )
     except KeyError:
-        raise DevourConfigException(
+        raise exceptions.DevourConfigException(
             'missing  consumer_routes in KAFKA_CONFIG'
         )
 
