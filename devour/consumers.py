@@ -1,21 +1,25 @@
+try:
+    import ujson as json
+except ImportError:
+    import json
 import pykafka
-import json
 import logging
+from devour.handlers import ClientHandler
 from devour import exceptions, schemas
 from devour.utils.helpers import validate_config
 
 class DevourConsumer(object):
 
-    def __init__(self):
+    def __init__(self, auto_start=True):
         """
         :consumer_topic: - string name of topic to be consumed from
-        :consumer_digest: - string name of the function used to manipulate kafka output
+        :consumer_digest: - string name of the function used to manipulate kafka output, defaults to 'digest'
         :consumer_type: - type of pykafka consumer to use. simple_consumer or balanced_consumer
         :consumer_config: - dictionary containing all kwargs needed to config the consumer type. Any extras
         will be ignored
 
         :dump_json: - bool determines if consumer loads json message.value into consumer.digest()
-        :dump_json: - bool determines if consumer dumps raw message.value into consumer.digest()
+        :dump_raw: - bool determines if consumer dumps raw message.value into consumer.digest()
         :dump_obj: - bool determines if consumer dumps message object into consumer.digest()
         default behavior loads json representation of message.value and uses double star notation to
         dump result as kwargs to consumer.digest()
@@ -48,9 +52,13 @@ class DevourConsumer(object):
         self.dump_obj = getattr(self, 'dump_obj', False)
 
         # internal
+        self.client = None
         self.consumer = None
 
-    def configure(self, client_config):
+        if auto_start:
+            self.configure()
+
+    def configure(self):
         if self.config:
             self._validate_config(self.config, self.type)
 
@@ -58,21 +66,8 @@ class DevourConsumer(object):
         log_name = self.config.pop('log_name', __name__)
         self.logger = logging.getLogger(log_name)
 
-        try:
-            #attempt to connect to kafka cluster
-            client = pykafka.KafkaClient(
-                hosts=client_config.get('hosts'),
-                zookeeper_hosts=client_config.get('zookeeper_hosts'),
-                ssl_config=client_config.get('ssl_config')
-            )
-
-            #attempt to get topic
-            topic = client.topics[self.topic]
-            self.consumer = getattr(topic, 'get_{0}'.format(self.type), None)(**self.config)
-        except AttributeError:
-            raise exceptions.DevourConfigException('consumer_topic {0} not one of simple_consumer or balanced_consumer'.format(self.type))
-        except KeyError:
-            raise exceptions.DevourConfigException('topic {0} does not exist on current kafka cluster'.format(self.topic))
+        self.client = ClientHandler()
+        self.consumer = self.client.get_consumer(self.topic, self.config, self.type)
 
         return True
 

@@ -6,7 +6,8 @@ from devour import exceptions
 from test_utils import DevourTestMixin
 
 class TestSimpleConsumerLogic(TestCase, DevourTestMixin):
-    def setUp(self):
+    @mock.patch('devour.consumers.ClientHandler')
+    def setUp(self, mocked_client):
         self.success = self.generate_subclass(
             {
                 'consumer_topic':'topic',
@@ -38,8 +39,8 @@ class TestSimpleConsumerLogic(TestCase, DevourTestMixin):
             }
         )()
 
-
-    def test_consumer_init(self):
+    @mock.patch('devour.consumers.ClientHandler')
+    def test_consumer_init(self, mocked_client):
         #successful
         try:
             new = self.success()
@@ -60,28 +61,58 @@ class TestSimpleConsumerLogic(TestCase, DevourTestMixin):
             self.failure_two
         )
 
-    @mock.patch('devour.consumers.pykafka.KafkaClient')
-    def test_consumer_configure_simple_consumer_success(self, mocked_client):
+    @mock.patch('devour.handlers.load_module')
+    @mock.patch('devour.handlers.pykafka.KafkaClient')
+    def test_consumer_configure_simple_consumer_success(self, mocked_client, mocked_load):
         mocked_client.reset_mock()
+        mocked_load.reset_mock()
+
+        config = {
+            "hosts":"fakehost:fakeport",
+            "ssl_config": None
+        }
+
+        conf = mock.MagicMock()
+        conf.__getitem__.return_value = config
+        settings = mock.MagicMock()
+        type(settings).KAFKA_CONFIG = mock.PropertyMock(return_value=conf)
+        mocked_load.return_value = settings
 
         mocked_topic = mock.MagicMock()
         mocked_client.return_value.topics.__getitem__.return_value = mocked_topic
 
-        config = {
-            "client_config":{
-                "hosts":"fakehost:fakeport",
-                "ssl_config": None
+        cls = self.generate_subclass(
+            {
+                'consumer_topic':'topic',
+                'consumer_type':'simple_consumer',
+                'dump_raw': True
+            },
+            {
+                'digest': self.digest
             }
-        }
+        )(auto_start=False)
 
-        self.assertTrue(self.cls.configure(**config))
+        self.assertTrue(cls.configure())
         mocked_client.assert_called_once_with(hosts='fakehost:fakeport', ssl_config=None, zookeeper_hosts=None)
         mocked_client.return_value.topics.__getitem__.assert_called_once_with('topic')
         mocked_topic.get_simple_consumer.assert_called_once()
 
-    @mock.patch('devour.consumers.pykafka.KafkaClient')
-    def test_basic_consumption(self, mocked_client):
+    @mock.patch('devour.handlers.load_module')
+    @mock.patch('devour.handlers.pykafka.KafkaClient')
+    def test_basic_consumption(self, mocked_client, mocked_load):
         mocked_client.reset_mock()
+        mocked_load.reset_mock()
+
+        config = {
+            "hosts":"fakehost:fakeport",
+            "ssl_config": None
+        }
+
+        conf = mock.MagicMock()
+        conf.__getitem__.return_value = config
+        settings = mock.MagicMock()
+        type(settings).KAFKA_CONFIG = mock.PropertyMock(return_value=conf)
+        mocked_load.return_value = settings
 
         messages = [
             'Hi there!',
@@ -91,15 +122,19 @@ class TestSimpleConsumerLogic(TestCase, DevourTestMixin):
         mocked_topic.get_simple_consumer.return_value = self.generate_mocked_consumer(messages)
         mocked_client.return_value.topics.__getitem__.return_value = mocked_topic
 
-        config = {
-            "client_config":{
-                "hosts":"fakehost:fakeport",
-                "ssl_config": None
+        cls = self.generate_subclass(
+            {
+                'consumer_topic':'topic',
+                'consumer_type':'simple_consumer',
+                'dump_raw': True
+            },
+            {
+                'digest': self.digest
             }
-        }
+        )()
 
-        self.assertTrue(self.cls.configure(**config))
-        ret = self.cls.consume()
+        self.assertTrue(cls.configure())
+        ret = cls.consume()
         self.assertFalse(ret)
 
         self.digest.assert_has_calls(
@@ -109,7 +144,8 @@ class TestSimpleConsumerLogic(TestCase, DevourTestMixin):
             ]
         )
 
-    def test_digest_not_implemented_default(self):
+    @mock.patch('devour.consumers.ClientHandler')
+    def test_digest_not_implemented_default(self, mocked_client):
         cls = self.generate_subclass(
             {
                 'consumer_topic':'topic',
@@ -122,7 +158,8 @@ class TestSimpleConsumerLogic(TestCase, DevourTestMixin):
             cls
         )
 
-    def test_digest_not_implemented_custom(self):
+    @mock.patch('devour.consumers.ClientHandler')
+    def test_digest_not_implemented_custom(self, mocked_client):
         cls = self.generate_subclass(
             {
                 'consumer_topic':'topic',
@@ -135,7 +172,8 @@ class TestSimpleConsumerLogic(TestCase, DevourTestMixin):
             cls
         )
 
-    def test_config_fails_before_config(self):
+    @mock.patch('devour.consumers.ClientHandler')
+    def test_config_fails_before_config(self, mocked_client):
         cls = self.generate_subclass(
             {
                 'consumer_topic':'topic',
@@ -144,7 +182,7 @@ class TestSimpleConsumerLogic(TestCase, DevourTestMixin):
             {
                 'digest':mock.MagicMock()
             }
-        )()
+        )(auto_start=False)
 
         self.assertRaises(
             exceptions.DevourConfigException,
@@ -152,7 +190,8 @@ class TestSimpleConsumerLogic(TestCase, DevourTestMixin):
         )
 
 class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):
-    def setUp(self):
+    @mock.patch('devour.consumers.ClientHandler')
+    def setUp(self, mocked_client):
         self.cls = self.generate_subclass(
             {
                 'consumer_topic':'topic',
@@ -464,7 +503,8 @@ class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):
 
 
 class TestBalancedConsumerLogic(TestCase, DevourTestMixin):
-    def setUp(self):
+    @mock.patch('devour.consumers.ClientHandler')
+    def setUp(self, mocked_client):
         self.success = self.generate_subclass(
             {
                 'consumer_topic':'topic',
@@ -496,8 +536,8 @@ class TestBalancedConsumerLogic(TestCase, DevourTestMixin):
             }
         )()
 
-
-    def test_balanced_consumer_init(self):
+    @mock.patch('devour.consumers.ClientHandler')
+    def test_balanced_consumer_init(self, mocked):
         #successful
         try:
             new = self.success()
@@ -518,28 +558,58 @@ class TestBalancedConsumerLogic(TestCase, DevourTestMixin):
             self.failure_two
         )
 
-    @mock.patch('devour.consumers.pykafka.KafkaClient')
-    def test_configure_balanced_consumer_success(self, mocked_client):
+    @mock.patch('devour.handlers.load_module')
+    @mock.patch('devour.handlers.pykafka.KafkaClient')
+    def test_configure_balanced_consumer_success(self, mocked_client, mocked_load):
         mocked_client.reset_mock()
+        mocked_load.reset_mock()
+
+        config = {
+            "hosts":"fakehost:fakeport",
+            "ssl_config": None
+        }
+
+        conf = mock.MagicMock()
+        conf.__getitem__.return_value = config
+        settings = mock.MagicMock()
+        type(settings).KAFKA_CONFIG = mock.PropertyMock(return_value=conf)
+        mocked_load.return_value = settings
 
         mocked_topic = mock.MagicMock()
         mocked_client.return_value.topics.__getitem__.return_value = mocked_topic
 
-        config = {
-            "client_config":{
-                "hosts":"fakehost:fakeport",
-                "ssl_config": None
+        cls = self.generate_subclass(
+            {
+                'consumer_topic':'topic',
+                'consumer_type':'balanced_consumer',
+                'dump_raw': True
+            },
+            {
+                'digest': self.digest
             }
-        }
+        )(auto_start=False)
 
-        self.assertTrue(self.cls.configure(**config))
+        self.assertTrue(cls.configure())
         mocked_client.assert_called_once_with(hosts='fakehost:fakeport', ssl_config=None, zookeeper_hosts=None)
         mocked_client.return_value.topics.__getitem__.assert_called_once_with('topic')
         mocked_topic.get_balanced_consumer.assert_called_once()
 
-    @mock.patch('devour.consumers.pykafka.KafkaClient')
-    def test_basic_consumption_balanced_consumer(self, mocked_client):
+    @mock.patch('devour.handlers.load_module')
+    @mock.patch('devour.handlers.pykafka.KafkaClient')
+    def test_basic_consumption_balanced_consumer(self, mocked_client, mocked_load):
         mocked_client.reset_mock()
+        mocked_load.reset_mock()
+
+        config = {
+            "hosts":"fakehost:fakeport",
+            "ssl_config": None
+        }
+
+        conf = mock.MagicMock()
+        conf.__getitem__.return_value = config
+        settings = mock.MagicMock()
+        type(settings).KAFKA_CONFIG = mock.PropertyMock(return_value=conf)
+        mocked_load.return_value = settings
 
         messages = [
             'Hi there!',
@@ -549,15 +619,19 @@ class TestBalancedConsumerLogic(TestCase, DevourTestMixin):
         mocked_topic.get_balanced_consumer.return_value = self.generate_mocked_consumer(messages)
         mocked_client.return_value.topics.__getitem__.return_value = mocked_topic
 
-        config = {
-            "client_config":{
-                "hosts":"fakehost:fakeport",
-                "ssl_config": None
+        cls = self.generate_subclass(
+            {
+                'consumer_topic':'topic',
+                'consumer_type':'balanced_consumer',
+                'dump_raw': True
+            },
+            {
+                'digest': self.digest
             }
-        }
+        )()
 
-        self.assertTrue(self.cls.configure(**config))
-        ret = self.cls.consume()
+        self.assertTrue(cls.configure())
+        ret = cls.consume()
         self.assertFalse(ret)
 
         self.digest.assert_has_calls(
@@ -567,7 +641,8 @@ class TestBalancedConsumerLogic(TestCase, DevourTestMixin):
             ]
         )
 
-    def test_digest_not_implemented_default_balanced_consumer(self):
+    @mock.patch('devour.consumers.ClientHandler')
+    def test_digest_not_implemented_default_balanced_consumer(self, mocked_client):
         cls = self.generate_subclass(
             {
                 'consumer_topic':'topic',
@@ -580,7 +655,8 @@ class TestBalancedConsumerLogic(TestCase, DevourTestMixin):
             cls
         )
 
-    def test_digest_not_implemented_custom_balanced_consumer(self):
+    @mock.patch('devour.consumers.ClientHandler')
+    def test_digest_not_implemented_custom_balanced_consumer(self, mocked_client):
         cls = self.generate_subclass(
             {
                 'consumer_topic':'topic',
@@ -593,7 +669,8 @@ class TestBalancedConsumerLogic(TestCase, DevourTestMixin):
             cls
         )
 
-    def test_consume_fails_before_config_balanced_consumer(self):
+    @mock.patch('devour.consumers.ClientHandler')
+    def test_consume_fails_before_config_balanced_consumer(self, mocked_client):
         cls = self.generate_subclass(
             {
                 'consumer_topic':'topic',
@@ -602,7 +679,7 @@ class TestBalancedConsumerLogic(TestCase, DevourTestMixin):
             {
                 'digest':mock.MagicMock()
             }
-        )()
+        )(auto_start=False)
 
         self.assertRaises(
             exceptions.DevourConfigException,
@@ -610,7 +687,8 @@ class TestBalancedConsumerLogic(TestCase, DevourTestMixin):
         )
 
 class TestBalancedConsumerArgValidation(TestCase, DevourTestMixin):
-    def setUp(self):
+    @mock.patch('devour.consumers.ClientHandler')
+    def setUp(self, mocked_client):
         self.cls = self.generate_subclass(
             {
                 'consumer_topic':'topic',
