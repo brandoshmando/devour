@@ -2,7 +2,7 @@ import mock
 import argparse
 from unittest import TestCase
 from devour import exceptions
-from devour.bin.devour import parse_args
+from devour.bin.devour_commands import parse_args
 from devour.bin.schemas import CONFIG_SCHEMA
 from devour.utils.helpers import validate_config
 

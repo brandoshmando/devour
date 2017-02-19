@@ -2,9 +2,9 @@ import os
 import pykafka
 import atexit
 from threading import local
-from .exceptions import DevourConfigException
-from .utils.helpers import validate_config
-from .utils.loaders import load_module, load_consumer_class
+from devour.exceptions import DevourConfigException
+from devour.utils.helpers import validate_config
+from devour.utils.loaders import load_module, load_consumer_class
 from devour.bin.schemas import  CONFIG_SCHEMA
 from devour.producers import _ProducerProxy
 

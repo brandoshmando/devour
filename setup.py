@@ -18,7 +18,7 @@ setup(
     zip_safe=False,
     entry_points={
         'console_scripts': [
-            'devour = devour.bin.devour:main'
+            'devour = devour.bin.devour_commandst:main'
         ]
     },
     keywords = ['kafka', 'django', 'pykafka', 'python', 'devour']
