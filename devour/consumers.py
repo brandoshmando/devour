@@ -29,7 +29,6 @@ class DevourConsumer(object):
         self.topic = getattr(self, 'consumer_topic', None)
         self.type = getattr(self, 'consumer_type', None)
         self.digest_name = getattr(self, 'consumer_digest', 'digest')
-        self.digest = getattr(self, self.digest_name, None)
         self.config = getattr(self, 'consumer_config', {})
 
         required = [
@@ -41,7 +40,7 @@ class DevourConsumer(object):
             if not getattr(self, req, None):
                 raise AttributeError("{0} must declare a consumer_{1} attrubute.".format(self.__class__.__name__, req))
 
-        if not callable(self.digest):
+        if not callable(getattr(self, self.digest_name, None)):
             raise NotImplementedError(
                 '{0} must be a function on {1}'.format(self.digest_name, self.__class__.__name__)
             )
@@ -89,12 +88,14 @@ class DevourConsumer(object):
         # check options for digest before consuming
         # and return new function so that these checks
         # are not taking place for each message
+        digest = getattr(self, self.digest_name)
+
         if self.dump_raw:
-            formatted = lambda m: self.digest(m.offset, m.value)
-        elif self.dump_obj:
-            formatted = lambda m: self.digest(m.offset, m)
+            formatted = lambda m: digest(m.offset, m.value)
+        elif dump_obj:
+            formatted = lambda m: digest(m.offset, m)
         else:
-            formatted = lambda m: self.digest(
+            formatted = lambda m: digest(
                 m.offset,
                 **json.loads(self.schema_class(m.value).data)
             )
