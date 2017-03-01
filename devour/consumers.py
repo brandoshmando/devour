@@ -5,7 +5,7 @@ except ImportError:
 import pykafka
 import logging
 from devour.handlers import ClientHandler
-from devour import exceptions, schemas
+from devour import exceptions, validators
 from devour.utils.helpers import validate_config
 
 class DevourConsumer(object):
@@ -60,7 +60,7 @@ class DevourConsumer(object):
 
     def configure(self):
         if self.config:
-            self._validate_config(self.config, self.type)
+            validate_config(validators, getattr(self.type.upper() + '_VALIDATOR'), self.config)
 
         # setup log
         log_name = self.config.pop('log_name', __name__)
@@ -100,12 +100,3 @@ class DevourConsumer(object):
             formatted = lambda m: self.digest(**json.loads(m.value))
 
         return formatted
-
-    def _validate_config(self, config, consumer_type):
-        try:
-            schema = getattr(schemas, consumer_type.upper() + '_SCHEMA')
-        except AttributeError:
-            # this should never happen, but...
-            raise exceptions.DevourConfigException('No schema for consumer type {0}'.format(consumer_type))
-
-        return validate_config(schema, config)

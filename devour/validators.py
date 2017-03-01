@@ -1,7 +1,21 @@
 from pykafka.common import OffsetType
 from kazoo.client import KazooClient
 
-SIMPLE_CONSUMER_SCHEMA = {
+CONFIG_VALIDATOR = {
+    'type': 'client',
+    'data': {
+        'hosts':                             {'type': str, 'required': True},
+        'zookeeper_hosts':                   {'type': str, 'required': False},
+        'socket_timeout_ms':                 {'type': int, 'required': False},
+        'offsets_channel_socket_timeout_ms': {'type': int, 'required': False},
+        'use_greenlets':                     {'type': bool, 'required': False},
+        'exclude_internal_topics':           {'type': bool, 'required': False},
+        'source_address':                    {'type': str, 'required': False},
+        'broker_version':                    {'type': str, 'required': False}
+    }
+}
+
+SIMPLE_CONSUMER_VALIDATOR = {
     'type': 'consumer',
     'data': {
         'consumer_group':            {'type': bytes, 'required': False},
@@ -25,7 +39,7 @@ SIMPLE_CONSUMER_SCHEMA = {
     }
 }
 
-BALANCED_CONSUMER_SCHEMA  = {
+BALANCED_CONSUMER_VALIDATOR  = {
     'type': 'consumer',
     'data': {
         'consumer_group':                 {'type': bytes, 'required': True},

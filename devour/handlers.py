@@ -5,7 +5,7 @@ from threading import local
 from devour.exceptions import DevourConfigException
 from devour.utils.helpers import validate_config
 from devour.utils.loaders import load_module, load_consumer_class
-from devour.bin.schemas import  CONFIG_SCHEMA
+from devour.validators import  CONFIG_VALIDATOR
 from devour.producers import _ProducerProxy
 
 
@@ -23,7 +23,7 @@ class ClientHandler(object):
         atexit.register(self.stop_all_producers)
 
     def _configure(self):
-        settings_path = os.environ.get('KAFKA_SETTINGS_PATH') or\
+        settings_path = os.environ.get('KAFKA_SETTINGS_PATH') or \
                         self.settings_path or\
                         'settings'
         settings = load_module(settings_path)
@@ -41,7 +41,7 @@ class ClientHandler(object):
             )
 
         #validate congiuration args
-        validate_config(CONFIG_SCHEMA, config)
+        validate_config(CONFIG_VALIDATOR, config)
 
         # attempt to connect to kafka cluster
         # set manually since pykafka is the only

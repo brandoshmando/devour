@@ -2,7 +2,6 @@ import os, sys, argparse
 from devour.exceptions import DevourConfigException
 from devour.utils.loaders import load_module, load_consumer_class
 from devour.utils.helpers import validate_config
-from devour.bin.schemas import CONFIG_SCHEMA
 
 def parse_args(args):
     p = argparse.ArgumentParser()

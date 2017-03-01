@@ -17,8 +17,8 @@ def cwd():
             pass
 
 
-def validate_config(schema, config):
-    for attr,req in schema['data'].items():
+def validate_config(validator, config):
+    for attr,req in validator['data'].items():
         value = config.get(attr)
         if value:
             if not isinstance(value, req['type']):
@@ -30,6 +30,6 @@ def validate_config(schema, config):
                         raise exceptions.DevourConfigException('{0} requires {1} atrribute to be set'.format(attr, dep))
         else:
             if req['required']:
-                raise exceptions.DevourConfigException('value for {0} is required in Devour {1} configuration'.format(attr, schema['type']))
+                raise exceptions.DevourConfigException('value for {0} is required in Devour {1} configuration'.format(attr, validator['type']))
 
     return True

@@ -3,6 +3,8 @@ from unittest import TestCase
 from pykafka.common import OffsetType
 
 from devour import exceptions
+from devour.utils.helpers import validate_config
+from devour import validators
 from test_utils import DevourTestMixin
 
 class TestSimpleConsumerLogic(TestCase, DevourTestMixin):
@@ -209,15 +211,15 @@ class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):
         }
 
         # valid
-        ret = self.cls._validate_config(arg_dict, 'simple_consumer')
+        ret = validate_config(validators.SIMPLE_CONSUMER_VALIDATOR, arg_dict)
         self.assertTrue(ret)
         # invalid
         arg_dict['consumer_group'] = 1
         self.assertRaises(
             exceptions.DevourConfigException,
-            self.cls._validate_config,
-            config=arg_dict,
-            consumer_type='simple_consumer'
+            validate_config,
+            validator=getattr(validators, 'SIMPLE_CONSUMER_VALIDATOR'),
+            config=arg_dict
         )
 
     def test_fetch_message_max_bytes_simple_consumer(self):
@@ -226,15 +228,15 @@ class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):
         }
 
         # valid
-        ret = self.cls._validate_config(arg_dict, 'simple_consumer')
+        ret = validate_config(validators.SIMPLE_CONSUMER_VALIDATOR, arg_dict)
         self.assertTrue(ret)
         # invalid
         arg_dict['fetch_message_max_bytes'] = 'invalid'
         self.assertRaises(
             exceptions.DevourConfigException,
-            self.cls._validate_config,
-            config=arg_dict,
-            consumer_type='simple_consumer'
+            validate_config,
+            validator=getattr(validators, 'SIMPLE_CONSUMER_VALIDATOR'),
+            config=arg_dict
         )
 
     def test_num_consumer_fetchers_simple_consumer(self):
@@ -243,15 +245,15 @@ class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):
         }
 
         # valid
-        ret = self.cls._validate_config(arg_dict, 'simple_consumer')
+        ret = validate_config(validators.SIMPLE_CONSUMER_VALIDATOR, arg_dict)
         self.assertTrue(ret)
         # invalid
         arg_dict['num_consumer_fetchers'] = 'invalid'
         self.assertRaises(
             exceptions.DevourConfigException,
-            self.cls._validate_config,
-            config=arg_dict,
-            consumer_type='simple_consumer'
+            validate_config,
+            validator=getattr(validators, 'SIMPLE_CONSUMER_VALIDATOR'),
+            config=arg_dict
         )
 
     def test_auto_commit_enable_simple_consumer(self):
@@ -261,23 +263,23 @@ class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):
         }
 
         # valid
-        ret = self.cls._validate_config(arg_dict, 'simple_consumer')
+        ret = validate_config(validators.SIMPLE_CONSUMER_VALIDATOR, arg_dict)
         self.assertTrue(ret)
         # invalid
         arg_dict['auto_commit_enable'] = 'invalid'
         self.assertRaises(
             exceptions.DevourConfigException,
-            self.cls._validate_config,
-            config=arg_dict,
-            consumer_type='simple_consumer'
+            validate_config,
+            validator=getattr(validators, 'SIMPLE_CONSUMER_VALIDATOR'),
+            config=arg_dict
         )
         # missing dependent
         del arg_dict['consumer_group']
         self.assertRaises(
             exceptions.DevourConfigException,
-            self.cls._validate_config,
-            config=arg_dict,
-            consumer_type='simple_consumer'
+            validate_config,
+            validator=getattr(validators, 'SIMPLE_CONSUMER_VALIDATOR'),
+            config=arg_dict
         )
 
     def test_auto_commit_interval_ms_simple_consumer(self):
@@ -286,15 +288,15 @@ class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):
         }
 
         # valid
-        ret = self.cls._validate_config(arg_dict, 'simple_consumer')
+        ret = validate_config(validators.SIMPLE_CONSUMER_VALIDATOR, arg_dict)
         self.assertTrue(ret)
         # invalid
         arg_dict['auto_commit_interval_ms'] = 'invalid'
         self.assertRaises(
             exceptions.DevourConfigException,
-            self.cls._validate_config,
-            config=arg_dict,
-            consumer_type='simple_consumer'
+            validate_config,
+            validator=getattr(validators, 'SIMPLE_CONSUMER_VALIDATOR'),
+            config=arg_dict
         )
 
     def test_queued_max_messages_simple_consumer(self):
@@ -303,15 +305,15 @@ class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):
         }
 
         # valid
-        ret = self.cls._validate_config(arg_dict, 'simple_consumer')
+        ret = validate_config(validators.SIMPLE_CONSUMER_VALIDATOR, arg_dict)
         self.assertTrue(ret)
         # invalid
         arg_dict['queued_max_messages'] = 'invalid'
         self.assertRaises(
             exceptions.DevourConfigException,
-            self.cls._validate_config,
-            config=arg_dict,
-            consumer_type='simple_consumer'
+            validate_config,
+            validator=getattr(validators, 'SIMPLE_CONSUMER_VALIDATOR'),
+            config=arg_dict
         )
 
     def test_fetch_min_bytes_simple_consumer(self):
@@ -320,15 +322,15 @@ class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):
         }
 
         # valid
-        ret = self.cls._validate_config(arg_dict, 'simple_consumer')
+        ret = validate_config(validators.SIMPLE_CONSUMER_VALIDATOR, arg_dict)
         self.assertTrue(ret)
         # invalid
         arg_dict['fetch_min_bytes'] = 'invalid'
         self.assertRaises(
             exceptions.DevourConfigException,
-            self.cls._validate_config,
-            config=arg_dict,
-            consumer_type='simple_consumer'
+            validate_config,
+            validator=getattr(validators, 'SIMPLE_CONSUMER_VALIDATOR'),
+            config=arg_dict
         )
 
     def test_fetch_wait_max_ms_simple_consumer(self):
@@ -337,15 +339,15 @@ class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):
         }
 
         # valid
-        ret = self.cls._validate_config(arg_dict, 'simple_consumer')
+        ret = validate_config(validators.SIMPLE_CONSUMER_VALIDATOR, arg_dict)
         self.assertTrue(ret)
         # invalid
         arg_dict['fetch_wait_max_ms'] = 'invalid'
         self.assertRaises(
             exceptions.DevourConfigException,
-            self.cls._validate_config,
-            config=arg_dict,
-            consumer_type='simple_consumer'
+            validate_config,
+            validator=getattr(validators, 'SIMPLE_CONSUMER_VALIDATOR'),
+            config=arg_dict
         )
 
     def test_offsets_channel_backoff_ms_simple_consumer(self):
@@ -354,15 +356,15 @@ class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):
         }
 
         # valid
-        ret = self.cls._validate_config(arg_dict, 'simple_consumer')
+        ret = validate_config(validators.SIMPLE_CONSUMER_VALIDATOR, arg_dict)
         self.assertTrue(ret)
         # invalid
         arg_dict['offsets_channel_backoff_ms'] = 'invalid'
         self.assertRaises(
             exceptions.DevourConfigException,
-            self.cls._validate_config,
-            config=arg_dict,
-            consumer_type='simple_consumer'
+            validate_config,
+            validator=getattr(validators, 'SIMPLE_CONSUMER_VALIDATOR'),
+            config=arg_dict
         )
 
     def test_offsets_commit_max_retries_simple_consumer(self):
@@ -371,15 +373,15 @@ class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):
         }
 
         # valid
-        ret = self.cls._validate_config(arg_dict, 'simple_consumer')
+        ret = validate_config(validators.SIMPLE_CONSUMER_VALIDATOR, arg_dict)
         self.assertTrue(ret)
         # invalid
         arg_dict['offsets_commit_max_retries'] = 'invalid'
         self.assertRaises(
             exceptions.DevourConfigException,
-            self.cls._validate_config,
-            config=arg_dict,
-            consumer_type='simple_consumer'
+            validate_config,
+            validator=getattr(validators, 'SIMPLE_CONSUMER_VALIDATOR'),
+            config=arg_dict
         )
 
     def test_auto_offset_reset_simple_consumer(self):
@@ -388,15 +390,15 @@ class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):
         }
 
         # valid
-        ret = self.cls._validate_config(arg_dict, 'simple_consumer')
+        ret = validate_config(validators.SIMPLE_CONSUMER_VALIDATOR, arg_dict)
         self.assertTrue(ret)
         # invalid
         arg_dict['auto_offset_reset'] = 'invalid'
         self.assertRaises(
             exceptions.DevourConfigException,
-            self.cls._validate_config,
-            config=arg_dict,
-            consumer_type='simple_consumer'
+            validate_config,
+            validator=getattr(validators, 'SIMPLE_CONSUMER_VALIDATOR'),
+            config=arg_dict
         )
 
     def test_consumer_timeout_ms_simple_consumer(self):
@@ -405,15 +407,15 @@ class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):
         }
 
         # valid
-        ret = self.cls._validate_config(arg_dict, 'simple_consumer')
+        ret = validate_config(validators.SIMPLE_CONSUMER_VALIDATOR, arg_dict)
         self.assertTrue(ret)
         # invalid
         arg_dict['consumer_timeout_ms'] = 'invalid'
         self.assertRaises(
             exceptions.DevourConfigException,
-            self.cls._validate_config,
-            config=arg_dict,
-            consumer_type='simple_consumer'
+            validate_config,
+            validator=getattr(validators, 'SIMPLE_CONSUMER_VALIDATOR'),
+            config=arg_dict
         )
 
     def test_auto_start_simple_consumer(self):
@@ -422,15 +424,15 @@ class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):
         }
 
         # valid
-        ret = self.cls._validate_config(arg_dict, 'simple_consumer')
+        ret = validate_config(validators.SIMPLE_CONSUMER_VALIDATOR, arg_dict)
         self.assertTrue(ret)
         # invalid
         arg_dict['auto_start'] = 'invalid'
         self.assertRaises(
             exceptions.DevourConfigException,
-            self.cls._validate_config,
-            config=arg_dict,
-            consumer_type='simple_consumer'
+            validate_config,
+            validator=getattr(validators, 'SIMPLE_CONSUMER_VALIDATOR'),
+            config=arg_dict
         )
 
     def test_reset_offset_on_start_simple_consumer(self):
@@ -439,15 +441,15 @@ class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):
         }
 
         # valid
-        ret = self.cls._validate_config(arg_dict, 'simple_consumer')
+        ret = validate_config(validators.SIMPLE_CONSUMER_VALIDATOR, arg_dict)
         self.assertTrue(ret)
         # invalid
         arg_dict['reset_offset_on_start'] = 'invalid'
         self.assertRaises(
             exceptions.DevourConfigException,
-            self.cls._validate_config,
-            config=arg_dict,
-            consumer_type='simple_consumer'
+            validate_config,
+            validator=getattr(validators, 'SIMPLE_CONSUMER_VALIDATOR'),
+            config=arg_dict
         )
 
     def test_compacted_topic_simple_consumer(self):
@@ -456,15 +458,15 @@ class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):
         }
 
         # valid
-        ret = self.cls._validate_config(arg_dict, 'simple_consumer')
+        ret = validate_config(validators.SIMPLE_CONSUMER_VALIDATOR, arg_dict)
         self.assertTrue(ret)
         # invalid
         arg_dict['compacted_topic'] = 'invalid'
         self.assertRaises(
             exceptions.DevourConfigException,
-            self.cls._validate_config,
-            config=arg_dict,
-            consumer_type='simple_consumer'
+            validate_config,
+            validator=getattr(validators, 'SIMPLE_CONSUMER_VALIDATOR'),
+            config=arg_dict
         )
 
     def test_generation_id_simple_consumer(self):
@@ -473,15 +475,15 @@ class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):
         }
 
         # valid
-        ret = self.cls._validate_config(arg_dict, 'simple_consumer')
+        ret = validate_config(validators.SIMPLE_CONSUMER_VALIDATOR, arg_dict)
         self.assertTrue(ret)
         # invalid
         arg_dict['generation_id'] = 'invalid'
         self.assertRaises(
             exceptions.DevourConfigException,
-            self.cls._validate_config,
-            config=arg_dict,
-            consumer_type='simple_consumer'
+            validate_config,
+            validator=getattr(validators, 'SIMPLE_CONSUMER_VALIDATOR'),
+            config=arg_dict
         )
 
     def test_consumer_id_simple_consumer(self):
@@ -490,15 +492,15 @@ class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):
         }
 
         # valid
-        ret = self.cls._validate_config(arg_dict, 'simple_consumer')
+        ret = validate_config(validators.SIMPLE_CONSUMER_VALIDATOR, arg_dict)
         self.assertTrue(ret)
         # invalid
         arg_dict['generation_id'] = 'invalid'
         self.assertRaises(
             exceptions.DevourConfigException,
-            self.cls._validate_config,
-            config=arg_dict,
-            consumer_type='simple_consumer'
+            validate_config,
+            validator=getattr(validators, 'SIMPLE_CONSUMER_VALIDATOR'),
+            config=arg_dict
         )
 
 
@@ -706,32 +708,32 @@ class TestBalancedConsumerArgValidation(TestCase, DevourTestMixin):
         }
 
         # valid
-        ret = self.cls._validate_config(arg_dict, 'balanced_consumer')
+        ret = validate_config(validators.BALANCED_CONSUMER_VALIDATOR, arg_dict)
         self.assertTrue(ret)
         # invalid
         arg_dict['consumer_group'] = 1
         self.assertRaises(
             exceptions.DevourConfigException,
-            self.cls._validate_config,
-            config=arg_dict,
-            consumer_type='balanced_consumer'
+            validate_config,
+            validator=getattr(validators, 'BALANCED_CONSUMER_VALIDATOR'),
+            config=arg_dict
         )
 
         # reqiured
         arg_dict['consumer_group'] = None
         self.assertRaises(
             exceptions.DevourConfigException,
-            self.cls._validate_config,
-            config=arg_dict,
-            consumer_type='balanced_consumer'
+            validate_config,
+            validator=getattr(validators, 'BALANCED_CONSUMER_VALIDATOR'),
+            config=arg_dict
         )
 
         del arg_dict['consumer_group']
         self.assertRaises(
             exceptions.DevourConfigException,
-            self.cls._validate_config,
-            config=arg_dict,
-            consumer_type='balanced_consumer'
+            validate_config,
+            validator=getattr(validators, 'BALANCED_CONSUMER_VALIDATOR'),
+            config=arg_dict
         )
 
     def test_fetch_message_max_bytes_balanced_consumer(self):
@@ -741,15 +743,15 @@ class TestBalancedConsumerArgValidation(TestCase, DevourTestMixin):
         }
 
         # valid
-        ret = self.cls._validate_config(arg_dict, 'balanced_consumer')
+        ret = validate_config(validators.BALANCED_CONSUMER_VALIDATOR, arg_dict)
         self.assertTrue(ret)
         # invalid
         arg_dict['fetch_message_max_bytes'] = 'invalid'
         self.assertRaises(
             exceptions.DevourConfigException,
-            self.cls._validate_config,
-            config=arg_dict,
-            consumer_type='balanced_consumer'
+            validate_config,
+            validator=getattr(validators, 'BALANCED_CONSUMER_VALIDATOR'),
+            config=arg_dict
         )
 
     def test_num_consumer_fetchers_balanced_consumer(self):
@@ -759,15 +761,15 @@ class TestBalancedConsumerArgValidation(TestCase, DevourTestMixin):
         }
 
         # valid
-        ret = self.cls._validate_config(arg_dict, 'balanced_consumer')
+        ret = validate_config(validators.BALANCED_CONSUMER_VALIDATOR, arg_dict)
         self.assertTrue(ret)
         # invalid
         arg_dict['num_consumer_fetchers'] = 'invalid'
         self.assertRaises(
             exceptions.DevourConfigException,
-            self.cls._validate_config,
-            config=arg_dict,
-            consumer_type='balanced_consumer'
+            validate_config,
+            validator=getattr(validators, 'BALANCED_CONSUMER_VALIDATOR'),
+            config=arg_dict
         )
 
     def test_auto_commit_enable_balanced_consumer(self):
@@ -777,23 +779,23 @@ class TestBalancedConsumerArgValidation(TestCase, DevourTestMixin):
         }
 
         # valid
-        ret = self.cls._validate_config(arg_dict, 'balanced_consumer')
+        ret = validate_config(validators.BALANCED_CONSUMER_VALIDATOR, arg_dict)
         self.assertTrue(ret)
         # invalid
         arg_dict['auto_commit_enable'] = 'invalid'
         self.assertRaises(
             exceptions.DevourConfigException,
-            self.cls._validate_config,
-            config=arg_dict,
-            consumer_type='balanced_consumer'
+            validate_config,
+            validator=getattr(validators, 'BALANCED_CONSUMER_VALIDATOR'),
+            config=arg_dict
         )
         # missing dependent
         del arg_dict['consumer_group']
         self.assertRaises(
             exceptions.DevourConfigException,
-            self.cls._validate_config,
-            config=arg_dict,
-            consumer_type='balanced_consumer'
+            validate_config,
+            validator=getattr(validators, 'BALANCED_CONSUMER_VALIDATOR'),
+            config=arg_dict
         )
 
     def test_auto_commit_interval_ms_balanced_consumer(self):
@@ -803,15 +805,15 @@ class TestBalancedConsumerArgValidation(TestCase, DevourTestMixin):
         }
 
         # valid
-        ret = self.cls._validate_config(arg_dict, 'balanced_consumer')
+        ret = validate_config(validators.BALANCED_CONSUMER_VALIDATOR, arg_dict)
         self.assertTrue(ret)
         # invalid
         arg_dict['auto_commit_interval_ms'] = 'invalid'
         self.assertRaises(
             exceptions.DevourConfigException,
-            self.cls._validate_config,
-            config=arg_dict,
-            consumer_type='balanced_consumer'
+            validate_config,
+            validator=getattr(validators, 'BALANCED_CONSUMER_VALIDATOR'),
+            config=arg_dict
         )
 
     def test_queued_max_messages_balanced_consumer(self):
@@ -821,15 +823,15 @@ class TestBalancedConsumerArgValidation(TestCase, DevourTestMixin):
         }
 
         # valid
-        ret = self.cls._validate_config(arg_dict, 'balanced_consumer')
+        ret = validate_config(validators.BALANCED_CONSUMER_VALIDATOR, arg_dict)
         self.assertTrue(ret)
         # invalid
         arg_dict['queued_max_messages'] = 'invalid'
         self.assertRaises(
             exceptions.DevourConfigException,
-            self.cls._validate_config,
-            config=arg_dict,
-            consumer_type='balanced_consumer'
+            validate_config,
+            validator=getattr(validators, 'BALANCED_CONSUMER_VALIDATOR'),
+            config=arg_dict
         )
 
     def test_fetch_min_bytes_balanced_consumer(self):
@@ -839,15 +841,15 @@ class TestBalancedConsumerArgValidation(TestCase, DevourTestMixin):
         }
 
         # valid
-        ret = self.cls._validate_config(arg_dict, 'balanced_consumer')
+        ret = validate_config(validators.BALANCED_CONSUMER_VALIDATOR, arg_dict)
         self.assertTrue(ret)
         # invalid
         arg_dict['fetch_min_bytes'] = 'invalid'
         self.assertRaises(
             exceptions.DevourConfigException,
-            self.cls._validate_config,
-            config=arg_dict,
-            consumer_type='balanced_consumer'
+            validate_config,
+            validator=getattr(validators, 'BALANCED_CONSUMER_VALIDATOR'),
+            config=arg_dict
         )
 
     def test_fetch_wait_max_ms_balanced_consumer(self):
@@ -857,15 +859,15 @@ class TestBalancedConsumerArgValidation(TestCase, DevourTestMixin):
         }
 
         # valid
-        ret = self.cls._validate_config(arg_dict, 'balanced_consumer')
+        ret = validate_config(validators.BALANCED_CONSUMER_VALIDATOR, arg_dict)
         self.assertTrue(ret)
         # invalid
         arg_dict['fetch_wait_max_ms'] = 'invalid'
         self.assertRaises(
             exceptions.DevourConfigException,
-            self.cls._validate_config,
-            config=arg_dict,
-            consumer_type='balanced_consumer'
+            validate_config,
+            validator=getattr(validators, 'BALANCED_CONSUMER_VALIDATOR'),
+            config=arg_dict
         )
 
     def test_offsets_channel_backoff_ms_balanced_consumer(self):
@@ -875,15 +877,15 @@ class TestBalancedConsumerArgValidation(TestCase, DevourTestMixin):
         }
 
         # valid
-        ret = self.cls._validate_config(arg_dict, 'balanced_consumer')
+        ret = validate_config(validators.BALANCED_CONSUMER_VALIDATOR, arg_dict)
         self.assertTrue(ret)
         # invalid
         arg_dict['offsets_channel_backoff_ms'] = 'invalid'
         self.assertRaises(
             exceptions.DevourConfigException,
-            self.cls._validate_config,
-            config=arg_dict,
-            consumer_type='balanced_consumer'
+            validate_config,
+            validator=getattr(validators, 'BALANCED_CONSUMER_VALIDATOR'),
+            config=arg_dict
         )
 
     def test_offsets_commit_max_retries_balanced_consumer(self):
@@ -893,15 +895,15 @@ class TestBalancedConsumerArgValidation(TestCase, DevourTestMixin):
         }
 
         # valid
-        ret = self.cls._validate_config(arg_dict, 'balanced_consumer')
+        ret = validate_config(validators.BALANCED_CONSUMER_VALIDATOR, arg_dict)
         self.assertTrue(ret)
         # invalid
         arg_dict['offsets_commit_max_retries'] = 'invalid'
         self.assertRaises(
             exceptions.DevourConfigException,
-            self.cls._validate_config,
-            config=arg_dict,
-            consumer_type='balanced_consumer'
+            validate_config,
+            validator=getattr(validators, 'BALANCED_CONSUMER_VALIDATOR'),
+            config=arg_dict
         )
 
     def test_auto_offset_reset_balanced_consumer(self):
@@ -911,15 +913,15 @@ class TestBalancedConsumerArgValidation(TestCase, DevourTestMixin):
         }
 
         # valid
-        ret = self.cls._validate_config(arg_dict, 'balanced_consumer')
+        ret = validate_config(validators.BALANCED_CONSUMER_VALIDATOR, arg_dict)
         self.assertTrue(ret)
         # invalid
         arg_dict['auto_offset_reset'] = 'invalid'
         self.assertRaises(
             exceptions.DevourConfigException,
-            self.cls._validate_config,
-            config=arg_dict,
-            consumer_type='balanced_consumer'
+            validate_config,
+            validator=getattr(validators, 'BALANCED_CONSUMER_VALIDATOR'),
+            config=arg_dict
         )
 
     def test_consumer_timeout_ms_balanced_consumer(self):
@@ -929,15 +931,15 @@ class TestBalancedConsumerArgValidation(TestCase, DevourTestMixin):
         }
 
         # valid
-        ret = self.cls._validate_config(arg_dict, 'balanced_consumer')
+        ret = validate_config(validators.BALANCED_CONSUMER_VALIDATOR, arg_dict)
         self.assertTrue(ret)
         # invalid
         arg_dict['consumer_timeout_ms'] = 'invalid'
         self.assertRaises(
             exceptions.DevourConfigException,
-            self.cls._validate_config,
-            config=arg_dict,
-            consumer_type='balanced_consumer'
+            validate_config,
+            validator=getattr(validators, 'BALANCED_CONSUMER_VALIDATOR'),
+            config=arg_dict
         )
 
     def test_auto_start_balanced_consumer(self):
@@ -947,15 +949,15 @@ class TestBalancedConsumerArgValidation(TestCase, DevourTestMixin):
         }
 
         # valid
-        ret = self.cls._validate_config(arg_dict, 'balanced_consumer')
+        ret = validate_config(validators.BALANCED_CONSUMER_VALIDATOR, arg_dict)
         self.assertTrue(ret)
         # invalid
         arg_dict['auto_start'] = 'invalid'
         self.assertRaises(
             exceptions.DevourConfigException,
-            self.cls._validate_config,
-            config=arg_dict,
-            consumer_type='balanced_consumer'
+            validate_config,
+            validator=getattr(validators, 'BALANCED_CONSUMER_VALIDATOR'),
+            config=arg_dict
         )
 
     def test_reset_offset_on_start_balanced_consumer(self):
@@ -965,15 +967,15 @@ class TestBalancedConsumerArgValidation(TestCase, DevourTestMixin):
         }
 
         # valid
-        ret = self.cls._validate_config(arg_dict, 'balanced_consumer')
+        ret = validate_config(validators.BALANCED_CONSUMER_VALIDATOR, arg_dict)
         self.assertTrue(ret)
         # invalid
         arg_dict['reset_offset_on_start'] = 'invalid'
         self.assertRaises(
             exceptions.DevourConfigException,
-            self.cls._validate_config,
-            config=arg_dict,
-            consumer_type='balanced_consumer'
+            validate_config,
+            validator=getattr(validators, 'BALANCED_CONSUMER_VALIDATOR'),
+            config=arg_dict
         )
 
     def test_compacted_topic_balanced_consumer(self):
@@ -983,13 +985,13 @@ class TestBalancedConsumerArgValidation(TestCase, DevourTestMixin):
         }
 
         # valid
-        ret = self.cls._validate_config(arg_dict, 'balanced_consumer')
+        ret = validate_config(validators.BALANCED_CONSUMER_VALIDATOR, arg_dict)
         self.assertTrue(ret)
         # invalid
         arg_dict['compacted_topic'] = 'invalid'
         self.assertRaises(
             exceptions.DevourConfigException,
-            self.cls._validate_config,
-            config=arg_dict,
-            consumer_type='balanced_consumer'
+            validate_config,
+            validator=getattr(validators, 'BALANCED_CONSUMER_VALIDATOR'),
+            config=arg_dict
         )
