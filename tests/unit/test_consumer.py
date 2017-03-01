@@ -141,8 +141,8 @@ class TestSimpleConsumerLogic(TestCase, DevourTestMixin):
 
         self.digest.assert_has_calls(
             [
-                mock.call(messages[0]),
-                mock.call(messages[1])
+                mock.call(0, messages[0]),
+                mock.call(1, messages[1])
             ]
         )
 
@@ -638,8 +638,8 @@ class TestBalancedConsumerLogic(TestCase, DevourTestMixin):
 
         self.digest.assert_has_calls(
             [
-                mock.call(messages[0]),
-                mock.call(messages[1])
+                mock.call(0, messages[0]),
+                mock.call(1, messages[1])
             ]
         )
 

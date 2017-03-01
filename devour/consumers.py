@@ -89,14 +89,14 @@ class DevourConsumer(object):
         # check options for digest before consuming
         # and return new function so that these checks
         # are not taking place for each message
-        # TODO: custom serialization?
-        if self.dump_json:
-            formatted = lambda m: self.digest(json.loads(m.value))
-        elif self.dump_raw:
-            formatted = lambda m: self.digest(m.value)
+        if self.dump_raw:
+            formatted = lambda m: self.digest(m.offset, m.value)
         elif self.dump_obj:
-            formatted = lambda m: self.digest(m)
+            formatted = lambda m: self.digest(m.offset, m)
         else:
-            formatted = lambda m: self.digest(**json.loads(m.value))
+            formatted = lambda m: self.digest(
+                m.offset,
+                **json.loads(self.schema_class(m.value).data)
+            )
 
         return formatted

@@ -25,10 +25,12 @@ class DevourTestMixin(object):
 
         consumer = mock.MagicMock()
         formatted_messages = []
-        for m in messages:
+        for i,m in enumerate(messages):
             mocked_message = mock.Mock()
-            mocked_property = mock.PropertyMock(return_value=m)
-            type(mocked_message).value = mocked_property
+            mocked_offset = mock.PropertyMock(return_value=i)
+            mocked_value = mock.PropertyMock(return_value=m)
+            type(mocked_message).offset = mocked_offset
+            type(mocked_message).value = mocked_value
             formatted_messages.append(mocked_message)
 
         consumer.__iter__.return_value = formatted_messages
