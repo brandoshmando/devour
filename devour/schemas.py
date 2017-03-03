@@ -6,13 +6,19 @@ class Schema(object):
     def __init__(self, data, *args, **kwargs):
         self._init_data = data
         self._serialized_data = None
-        self._meta = self.Meta
+
+        assert hasattr(self, 'Meta'), (
+            '{0} requires a Meta class to be declared'.format(self.__class__.__name__)
+        )
 
     @property
     def data(self):
+        if not hasattr(self, 'attributes'):
+            return self._init_data
+
         if not self._serialized_data:
             self._serialized_data = {}
-            for key in self._meta.attributes:
+            for key in self.Meta.attributes:
                 val = self._init_data.get(key)
                 if type(val) == dict:
                     try:
@@ -26,4 +32,4 @@ class Schema(object):
 
                 self._serialized_data[key] = val
 
-            return self._serialized_data
+        return self._serialized_data
