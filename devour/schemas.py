@@ -1,55 +1,35 @@
-from pykafka.common import OffsetType
-from kazoo.client import KazooClient
 
-SIMPLE_CONSUMER_SCHEMA = {
-    'type': 'consumer',
-    'data': {
-        'consumer_group':            {'type': bytes, 'required': False},
-        'fetch_message_max_bytes':   {'type': int, 'required': False},
-        'num_consumer_fetchers':     {'type': int, 'required': False},
-        'auto_commit_enable':        {'type': bool, 'required': False, 'dependents':['consumer_group']},
-        'auto_commit_interval_ms':   {'type': int, 'required': False},
-        'queued_max_messages':       {'type': int, 'required': False},
-        'fetch_min_bytes':           {'type': int, 'required': False},
-        'fetch_wait_max_ms':         {'type': int, 'required': False},
-        'offsets_channel_backoff_ms':{'type': int, 'required': False},
-        'offsets_commit_max_retries':{'type': int, 'required': False},
-        'auto_offset_reset':         {'type': OffsetType, 'required': False},
-        'consumer_timeout_ms':       {'type': int, 'required': False},
-        'auto_start':                {'type': bool, 'required': False},
-        'reset_offset_on_start':     {'type': bool, 'required': False},
-        'compacted_topic':           {'type': bool, 'required': False},
-        'generation_id':             {'type': int, 'required': False},
-        'consumer_id':               {'type': bytes, 'required': False},
-        'log_name':                  {'type': str, 'required': False}
-    }
-}
+class SchemaMeta(object):
+    pass
 
-BALANCED_CONSUMER_SCHEMA  = {
-    'type': 'consumer',
-    'data': {
-        'consumer_group':                 {'type': bytes, 'required': True},
-        'managed':                        {'type': bool, 'required': False},
-        'fetch_message_max_bytes':        {'type': int, 'required': False},
-        'num_consumer_fetchers':          {'type': int, 'required': False},
-        'auto_commit_enable':             {'type': bool, 'required': False, 'dependents':['consumer_group']},
-        'auto_commit_interval_ms':        {'type': int, 'required': False},
-        'queued_max_messages':            {'type': int, 'required': False},
-        'fetch_min_bytes':                {'type': int, 'required': False},
-        'fetch_wait_max_ms':              {'type': int, 'required': False},
-        'offsets_channel_backoff_ms':     {'type': int, 'required': False},
-        'offsets_commit_max_retries':     {'type': int, 'required': False},
-        'auto_offset_reset':              {'type': OffsetType, 'required': False},
-        'consumer_timeout_ms':            {'type': int, 'required': False},
-        'auto_start':                     {'type': bool, 'required': False},
-        'reset_offset_on_start':          {'type': bool, 'required': False},
-        'compacted_topic':                {'type': bool, 'required': False},
-        'zookeeper_connection_timeout_ms':{'type': int, 'required': False},
-        'zookeeper_connect':              {'type': str, 'required': False},
-        'zookeeper':                      {'type': KazooClient, 'required': False},
-        'use_rdkafka':                    {'type': bool, 'required': False},
-        'rebalance_backoff_ms':           {'type': int, 'required': False},
-        'rebalance_max_retries':          {'type': int, 'required': False},
-        'log_name':                       {'type': str, 'required': False}
-    }
-}
+class Schema(object):
+    def __init__(self, data, *args, **kwargs):
+        self._init_data = data
+        self._serialized_data = None
+
+        assert hasattr(self, 'Meta'), (
+            '{0} requires a Meta class to be declared'.format(self.__class__.__name__)
+        )
+
+    @property
+    def data(self):
+        if not hasattr(self, 'attributes'):
+            return self._init_data
+
+        if not self._serialized_data:
+            self._serialized_data = {}
+            for key in self.Meta.attributes:
+                val = self._init_data.get(key)
+                if type(val) == dict:
+                    try:
+                        schema = getattr(self, key)
+                        val = schema(val).data
+                    except AttributeError:
+                        # look for schema provided for
+                        # attr. let pass and add full dict
+                        # if none declared
+                        pass
+
+                self._serialized_data[key] = val
+
+        return self._serialized_data

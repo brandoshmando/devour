@@ -5,7 +5,7 @@ except ImportError:
 import pykafka
 import logging
 from devour.handlers import ClientHandler
-from devour import exceptions, schemas
+from devour import exceptions, validators
 from devour.utils.helpers import validate_config
 
 class DevourConsumer(object):
@@ -29,7 +29,6 @@ class DevourConsumer(object):
         self.topic = getattr(self, 'consumer_topic', None)
         self.type = getattr(self, 'consumer_type', None)
         self.digest_name = getattr(self, 'consumer_digest', 'digest')
-        self.digest = getattr(self, self.digest_name, None)
         self.config = getattr(self, 'consumer_config', {})
 
         required = [
@@ -41,7 +40,7 @@ class DevourConsumer(object):
             if not getattr(self, req, None):
                 raise AttributeError("{0} must declare a consumer_{1} attrubute.".format(self.__class__.__name__, req))
 
-        if not callable(self.digest):
+        if not callable(getattr(self, self.digest_name, None)):
             raise NotImplementedError(
                 '{0} must be a function on {1}'.format(self.digest_name, self.__class__.__name__)
             )
@@ -60,7 +59,7 @@ class DevourConsumer(object):
 
     def configure(self):
         if self.config:
-            self._validate_config(self.config, self.type)
+            validate_config(validators, getattr(self.type.upper() + '_VALIDATOR'), self.config)
 
         # setup log
         log_name = self.config.pop('log_name', __name__)
@@ -89,23 +88,16 @@ class DevourConsumer(object):
         # check options for digest before consuming
         # and return new function so that these checks
         # are not taking place for each message
-        # TODO: custom serialization?
-        if self.dump_json:
-            formatted = lambda m: self.digest(json.loads(m.value))
-        elif self.dump_raw:
-            formatted = lambda m: self.digest(m.value)
-        elif self.dump_obj:
-            formatted = lambda m: self.digest(m)
+        digest = getattr(self, self.digest_name)
+
+        if self.dump_raw:
+            formatted = lambda m: digest(m.offset, m.value)
+        elif dump_obj:
+            formatted = lambda m: digest(m.offset, m)
         else:
-            formatted = lambda m: self.digest(**json.loads(m.value))
+            formatted = lambda m: digest(
+                m.offset,
+                **json.loads(self.schema_class(m.value).data)
+            )
 
         return formatted
-
-    def _validate_config(self, config, consumer_type):
-        try:
-            schema = getattr(schemas, consumer_type.upper() + '_SCHEMA')
-        except AttributeError:
-            # this should never happen, but...
-            raise exceptions.DevourConfigException('No schema for consumer type {0}'.format(consumer_type))
-
-        return validate_config(schema, config)
