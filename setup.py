@@ -2,12 +2,12 @@ from setuptools import setup
 
 setup(
     name='devour',
-    version='0.4.1',
+    version='0.4.2',
     url='',
     author='http://github.com/brandoshmando',
     author_email='brancraft@gmail.com',
     license='MIT',
-    packages=['devour',],
+    packages=['devour', 'devour.utils'],
     install_requires=[
         'pykafka',
         'kazoo'
