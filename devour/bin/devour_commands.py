@@ -6,10 +6,16 @@ from devour.utils.helpers import validate_config
 def parse_args(args):
     p = argparse.ArgumentParser()
     p.add_argument('consumer_name')
+    p.add_argument('method')
 
     return p.parse_args(args)
 
 def main():
+    parsed = parse_args(sys.argv[1:])
+    if parsed.method == 'consume':
+        consume()
+
+def consume():
     parsed = parse_args(sys.argv[1:])
     settings_path = os.environ.get('KAFKA_SETTINGS_PATH') or 'settings'
     settings = load_module(settings_path)

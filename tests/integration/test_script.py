@@ -9,10 +9,12 @@ from devour.utils.helpers import validate_config
 class TestScript(TestCase):
     def test_parse_args_success(self):
         arg_map = {
+            'method': 'consume',
             'consumer_name': 'test'
         }
 
         ret = parse_args(arg_map.values())
+        self.assertEqual(ret.method, arg_map['method'])
         self.assertEqual(ret.consumer_name, arg_map['consumer_name'])
 
     def test_parse_args_failure(self):

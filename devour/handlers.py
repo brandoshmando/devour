@@ -10,10 +10,9 @@ from devour.producers import _ProducerProxy
 
 
 class ClientHandler(object):
-    def __init__(self, settings_path=None, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         self._client = local()
         self.producers = local()
-        self.settings_path = settings_path
 
         # register exit callback
         # this ensures all producers
@@ -24,7 +23,6 @@ class ClientHandler(object):
 
     def _configure(self):
         settings_path = os.environ.get('KAFKA_SETTINGS_PATH') or \
-                        self.settings_path or\
                         'settings'
         settings = load_module(settings_path)
 
