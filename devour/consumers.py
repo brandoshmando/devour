@@ -26,17 +26,16 @@ class DevourConsumer(object):
         """
 
         # required attrs
-        self.topic = getattr(self, 'consumer_topic', None)
+        self.topic = getattr(self, 'topic', None)
         self.type = getattr(self, 'consumer_type', None)
-        self.digest_name = getattr(self, 'consumer_digest', 'digest')
-        self.config = getattr(self, 'consumer_config', {})
+        self.digest_name = getattr(self, 'digest_name', 'digest')
+        self.config = getattr(self, 'config', {})
         self.schema_class = getattr(self, 'schema_class', None)
 
         # not required
         self.dump_raw = getattr(self, 'dump_raw', False)
         self.dump_obj = getattr(self, 'dump_obj', False)
-        default = not (self.dump_raw or self.dump_obj)
-        self.dump_json = getattr(self, 'dump_json', default)
+        self.dump_json = getattr(self, 'dump_json', False)
 
         required = [
             'topic',
@@ -46,7 +45,7 @@ class DevourConsumer(object):
 
         for req in required:
             if not getattr(self, req, None):
-                if not self.dump_json and req == 'schema_class':
+                if not self.dump_json and (self.dump_raw or self.dump_obj) and req == 'schema_class':
                     continue
                 raise AttributeError("{0} must declare a consumer_{1} attrubute.".format(self.__class__.__name__, req))
 
