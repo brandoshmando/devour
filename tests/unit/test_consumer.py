@@ -35,6 +35,13 @@ class TestSimpleConsumerLogic(TestCase, DevourTestMixin):
             }
         )
 
+        self.failure_three = self.generate_subclass(
+            {
+                'consumer_topic': 'topic',
+                'consumer_type': 'simple_consumer'
+            }
+        )
+
         self.digest = mock.MagicMock()
 
         self.cls = self.generate_subclass(
@@ -68,6 +75,12 @@ class TestSimpleConsumerLogic(TestCase, DevourTestMixin):
         self.assertRaises(
             AttributeError,
             self.failure_two
+        )
+
+        #missing schema_class
+        self.assertRaises(
+            AttributeError,
+            self.failure_three
         )
 
     @mock.patch('devour.handlers.load_module')
