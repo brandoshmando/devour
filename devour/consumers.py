@@ -30,25 +30,30 @@ class DevourConsumer(object):
         self.type = getattr(self, 'consumer_type', None)
         self.digest_name = getattr(self, 'consumer_digest', 'digest')
         self.config = getattr(self, 'consumer_config', {})
+        self.schema_class = getattr(self, 'schema_class', None)
+
+        # not required
+        self.dump_raw = getattr(self, 'dump_raw', False)
+        self.dump_obj = getattr(self, 'dump_obj', False)
+        default = not (self.dump_raw or self.dump_obj)
+        self.dump_json = getattr(self, 'dump_json', default)
 
         required = [
             'topic',
-            'type'
+            'type',
+            'schema_class'
         ]
 
         for req in required:
             if not getattr(self, req, None):
+                if not self.dump_json and req == 'schema_class':
+                    continue
                 raise AttributeError("{0} must declare a consumer_{1} attrubute.".format(self.__class__.__name__, req))
 
         if not callable(getattr(self, self.digest_name, None)):
             raise NotImplementedError(
                 '{0} must be a function on {1}'.format(self.digest_name, self.__class__.__name__)
             )
-
-        # not required
-        self.dump_json = getattr(self, 'dump_json', False)
-        self.dump_raw = getattr(self, 'dump_raw', False)
-        self.dump_obj = getattr(self, 'dump_obj', False)
 
         # internal
         self.client = None
@@ -59,7 +64,7 @@ class DevourConsumer(object):
 
     def configure(self):
         if self.config:
-            validate_config(validators, getattr(self.type.upper() + '_VALIDATOR'), self.config)
+            validate_config(getattr(validators, self.type.upper() + '_VALIDATOR'), self.config)
 
         # setup log
         log_name = self.config.pop('log_name', __name__)
@@ -92,12 +97,12 @@ class DevourConsumer(object):
 
         if self.dump_raw:
             formatted = lambda m: digest(m.offset, m.value)
-        elif dump_obj:
+        elif self.dump_obj:
             formatted = lambda m: digest(m.offset, m)
         else:
             formatted = lambda m: digest(
                 m.offset,
-                **json.loads(self.schema_class(m.value).data)
+                **self.schema_class(json.loads(m.value)).data
             )
 
         return formatted

@@ -4,7 +4,7 @@ class SchemaMeta(object):
 
 class Schema(object):
     def __init__(self, data, *args, **kwargs):
-        self._init_data = data
+        self._init_data = data or {}
         self._serialized_data = None
 
         assert hasattr(self, 'Meta'), (
@@ -13,7 +13,7 @@ class Schema(object):
 
     @property
     def data(self):
-        if not hasattr(self, 'attributes'):
+        if not hasattr(self.Meta, 'attributes'):
             return self._init_data
 
         if not self._serialized_data:

@@ -18,6 +18,11 @@ class ExampleSchema(Schema):
     class Meta:
         attributes = ('key_1', 'key_2')
 
+class ExampleSchemaNoNested(Schema):
+
+    class Meta:
+        attributes = ('key_1', 'key_2')
+
 
 class TestSchema(TestCase):
     def setUp(self):
@@ -45,8 +50,9 @@ class TestSchema(TestCase):
         self.assertEqual(ret, self.data)
 
     def test_schema_returns_all_nested_data(self):
-        schema = ExampleSchema(data=self.nested_data)
+        schema = ExampleSchemaNoNested(data=self.nested_data)
         ret = schema.data
+        del self.nested_data['key_3']
         self.assertEqual(ret, self.nested_data)
 
     def test_schema_returns_specified_nested_data(self):

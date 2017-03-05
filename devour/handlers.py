@@ -59,7 +59,7 @@ class ClientHandler(object):
     def get_topic(self, key):
         self._check_status()
         try:
-            return self._client.pykafka.topics[key]
+            return self._client.pykafka.topics[bytes(key)]
         except KeyError:
             raise DevourConfigException('topic {0} does not exist on current kafka cluster'.format(key))
 
