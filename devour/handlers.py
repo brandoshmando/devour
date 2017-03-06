@@ -41,13 +41,18 @@ class ClientHandler(object):
         #validate congiuration args
         validate_config(CONFIG_VALIDATOR, config)
 
+        # setup ssl if provided
+        ssl = None
+        if config.get('ssl_config'):
+            ssl = pykafka.SslConfig(**config['ssl_config'])
+
         # attempt to connect to kafka cluster
         # set manually since pykafka is the only
         # lib we support for now
         self._client.pykafka = pykafka.KafkaClient(
             hosts=config.get('hosts'),
             zookeeper_hosts=config.get('zookeeper_hosts'),
-            ssl_config=config.get('ssl_config')
+            ssl_config=ssl
         )
         return True
 
