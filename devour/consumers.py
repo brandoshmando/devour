@@ -27,59 +27,42 @@ class DevourConsumer(object):
         dump result as kwargs to consumer.digest()
         """
 
-        # required attrs
-        self.topic = getattr(self, 'topic', None)
-        self.type = getattr(self, 'consumer_type', None)
-        self.digest_name = getattr(self, 'digest_name', 'digest')
-        self.config = getattr(self, 'config', {})
-        self.schema_class = getattr(self, 'schema_class', None)
-
         # not required
         self.dump_raw = getattr(self, 'dump_raw', False)
         self.dump_obj = getattr(self, 'dump_obj', False)
         self.dump_json = getattr(self, 'dump_json', False)
 
-        required = [
-            'topic',
-            'type',
-            'schema_class'
-        ]
+        # required attrs
+        validation_message = '{0} requires {1} to be declared'
 
-        for req in required:
-            if not getattr(self, req, None):
-                if not self.dump_json and (self.dump_raw or self.dump_obj) and req == 'schema_class':
-                    continue
-                raise AttributeError("{0} must declare a consumer_{1} attrubute.".format(self.__class__.__name__, req))
+        assert hasattr(self, 'topic'), (
+            validation_message.format(self.__class__.__name__, 'topic')
 
-        if not callable(getattr(self, self.digest_name, None)):
-            raise NotImplementedError(
-                '{0} must be a function on {1}'.format(self.digest_name, self.__class__.__name__)
+        )
+        assert hasattr(self, 'consumer_type'), (
+            validation_message.format(self.__class__.__name__, 'consumer_type')
+        )
+        # only if dump_json
+        if not (self.dump_raw or self.dump_obj) and self.dump_json:
+            assert hasattr(self, 'schema_class'), (
+                validation_message.format(self.__class__.__name__, 'schema_class')
             )
+
+        #ensure defaults
+        self.digest_name = getattr(self, 'digest_name', 'digest')
+        self.config = getattr(self, 'config', {})
+
+        validate_config(getattr(validators, self.consumer_type.upper() + '_VALIDATOR'), self.config)
 
         # internal
         self.client = None
         self.consumer = None
 
         if auto_start:
-            self.configure()
-
-    def configure(self):
-        if self.config:
-            validate_config(getattr(validators, self.type.upper() + '_VALIDATOR'), self.config)
-
-        # setup log
-        log_name = self.config.pop('log_name', __name__)
-        self.logger = logging.getLogger(log_name)
-
-        self.client = ClientHandler()
-        self.consumer = self.client.get_consumer(self.topic, self.config, self.type)
-
-        return True
+            self.client = ClientHandler()
+            self.consumer = self.client.get_consumer(self.topic, self.config, self.consumer_type)
 
     def consume(self):
-        if self.consumer is None:
-            raise exceptions.DevourConfigException('configure must be called before consume')
-
         # use _format_digest so all logic determining format is run
         # before consuming, preventing logic from running for each message
         formatted_digest = self._format_digest()
@@ -107,3 +90,7 @@ class DevourConsumer(object):
             )
 
         return formatted
+
+    def digest(self, offset, *args, **kwargs):
+        raise NotImplementedError(
+            'digest method not implemented on {0}'.format(self.__class_.__name__))
