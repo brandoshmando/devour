@@ -8,7 +8,12 @@ class TestClientHandler(TestCase):
     def setUp(self):
         self.config = {
             "hosts":"fakehost:fakeport",
-            "ssl_config": None
+            "ssl_config": {
+                'cafile': './fake/path/',
+                'certfile': './fake/path/',
+                'keyfile': './fake/path/',
+                'password': './fake/path/'
+            }
         }
 
         conf = mock.MagicMock()
@@ -25,9 +30,10 @@ class TestClientHandler(TestCase):
         self.assertEqual(len(handler._client.__dict__.keys()), 0)
         self.assertEqual(len(handler.producers.__dict__.keys()), 0)
 
+    @mock.patch('devour.handlers.pykafka.SslConfig')
     @mock.patch('devour.handlers.load_module')
     @mock.patch('devour.handlers.pykafka.KafkaClient')
-    def test_check_status(self, mocked_client, mocked_load):
+    def test_check_status(self, mocked_client, mocked_load, mocked_ssl):
         mocked_client.reset_mock()
         mocked_load.reset_mock()
         self.settings.reset_mock()
@@ -46,9 +52,10 @@ class TestClientHandler(TestCase):
         self.assertTrue(handler._client, 'pykafka')
         mocked_client.assert_called_once_with(
             hosts='fakehost:fakeport',
-            ssl_config=None,
-            zookeeper_hosts=None
+            zookeeper_hosts=None,
+            ssl_config=mocked_ssl.return_value
         )
+        mocked_ssl.assert_called_once_with(**self.config['ssl_config'])
 
     @mock.patch('devour.handlers.load_module')
     @mock.patch('devour.handlers.pykafka.KafkaClient')

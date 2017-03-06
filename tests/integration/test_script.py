@@ -189,3 +189,34 @@ class TestConfigValidation(TestCase):
             CONFIG_VALIDATOR,
             args_dict
         )
+
+    def test_ssl_config(self):
+        #valid
+        args_dict = {
+            'hosts':'fakehost:fakeport',
+            'ssl_config': {
+                'cafile': './fake/path/',
+                'certfile': './fake/path/',
+                'keyfile': './fake/path/',
+                'password': './fake/path/'
+            }
+        }
+
+        ret = validate_config(CONFIG_VALIDATOR, args_dict)
+        self.assertTrue(ret)
+
+        args_dict['ssl_config']['certfile'] = 1
+        self.assertRaises(
+            exceptions.DevourConfigException,
+            validate_config,
+            CONFIG_VALIDATOR,
+            args_dict
+        )
+
+        del args_dict['ssl_config']['cafile']
+        self.assertRaises(
+            exceptions.DevourConfigException,
+            validate_config,
+            CONFIG_VALIDATOR,
+            args_dict
+        )

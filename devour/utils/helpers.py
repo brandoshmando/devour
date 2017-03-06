@@ -1,6 +1,6 @@
 import sys, os
 from contextlib import contextmanager
-from devour import exceptions
+from devour import exceptions, validators
 
 @contextmanager
 def cwd():
@@ -21,13 +21,17 @@ def validate_config(validator, config):
     for attr,req in validator['data'].items():
         value = config.get(attr)
         if value:
-            if not isinstance(value, req['type']):
-                raise exceptions.DevourConfigException('{0} is not of type {1}'.format(attr, req['type'].__name__))
+            if req.get('type') == 'nested':
+                validator = getattr(validators, req['nested_validator'])
+                validate_config(validator, value)
+            else:
+                if not isinstance(value, req['type']):
+                    raise exceptions.DevourConfigException('{0} is not of type {1}'.format(attr, req['type'].__name__))
 
-            if req.get('dependents'):
-                for dep in req['dependents']:
-                    if not config.get(dep):
-                        raise exceptions.DevourConfigException('{0} requires {1} atrribute to be set'.format(attr, dep))
+                if req.get('dependents'):
+                    for dep in req['dependents']:
+                        if not config.get(dep):
+                            raise exceptions.DevourConfigException('{0} requires {1} atrribute to be set'.format(attr, dep))
         else:
             if req['required']:
                 raise exceptions.DevourConfigException('value for {0} is required in Devour {1} configuration'.format(attr, validator['type']))
