@@ -59,7 +59,7 @@ class TestClientHandler(TestCase):
 
     @mock.patch('devour.handlers.load_module')
     @mock.patch('devour.handlers.pykafka.KafkaClient')
-    def test_get_topic(self, mocked_client, mocked_load, mocked_ssl):
+    def test_get_topic(self, mocked_client, mocked_load):
         mocked_client.reset_mock()
         mocked_load.reset_mock()
         self.settings.reset_mock()
