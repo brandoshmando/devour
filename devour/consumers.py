@@ -43,11 +43,6 @@ class DevourConsumer(object):
         assert hasattr(self, 'consumer_type'), (
             validation_message.format(self.__class__.__name__, 'consumer_type')
         )
-        # only if dump_json
-        if not (self.dump_raw or self.dump_obj) and self.dump_json:
-            assert hasattr(self, 'schema_class'), (
-                validation_message.format(self.__class__.__name__, 'schema_class')
-            )
 
         #ensure defaults
         self.digest_name = getattr(self, 'digest_name', 'digest')
