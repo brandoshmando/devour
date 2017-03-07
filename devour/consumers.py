@@ -54,11 +54,17 @@ class DevourConsumer(object):
         self.client = None
         self.consumer = None
 
+        # primarily to make testing easier
         if auto_start:
             self.client = ClientHandler()
             self.consumer = self.client.get_consumer(self.topic, self.config, self.consumer_type)
 
     def consume(self):
+        # if not auto started, set client and consumer
+        if not (self.client and self.consumer):
+            self.client = ClientHandler()
+            self.consumer = self.client.get_consumer(self.topic, self.config, self.consumer_type)
+
         # use _format_digest so all logic determining format is run
         # before consuming, preventing logic from running for each message
         formatted_digest = self._format_digest()
@@ -67,7 +73,7 @@ class DevourConsumer(object):
                 try:
                     formatted_digest(m)
                 except Exception as e:
-                    self.logger.exception("{0} Error".format(e.__class__.__name__))
+                    print "{0}: {1}".format(e.__class__.__name__, str(e))
 
     def _format_digest(self):
         # check options for digest before consuming
@@ -80,13 +86,13 @@ class DevourConsumer(object):
         elif self.dump_obj:
             formatted = lambda m: digest(m.offset, m)
         else:
-            if hasattr(self, schema_class):
+            if hasattr(self, 'schema_class'):
                 formatted = lambda m: digest(
                     m.offset,
                     **self.schema_class(json.loads(m.value)).data
                 )
             else:
-                formatted = lambda m: digest(m.offset, json.loads(m.value))
+                formatted = lambda m: digest(m.offset, **json.loads(m.value))
 
         return formatted
 
