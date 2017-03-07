@@ -67,20 +67,14 @@ class TestSimpleConsumerLogic(TestCase, DevourTestMixin):
 
         #missing topic
         self.assertRaises(
-            AttributeError,
+            AssertionError,
             self.failure_one
         )
 
         #missing type
         self.assertRaises(
-            AttributeError,
+            AssertionError,
             self.failure_two
-        )
-
-        #missing schema_class
-        self.assertRaises(
-            AttributeError,
-            self.failure_three
         )
 
     @mock.patch('devour.handlers.load_module')
@@ -112,9 +106,8 @@ class TestSimpleConsumerLogic(TestCase, DevourTestMixin):
             {
                 'digest': self.digest
             }
-        )(auto_start=False)
+        )()
 
-        self.assertTrue(cls.configure())
         mocked_client.assert_called_once_with(hosts='fakehost:fakeport', ssl_config=None, zookeeper_hosts=None)
         mocked_client.return_value.topics.__getitem__.assert_called_once_with('topic')
         mocked_topic.get_simple_consumer.assert_called_once()
@@ -155,7 +148,6 @@ class TestSimpleConsumerLogic(TestCase, DevourTestMixin):
             }
         )()
 
-        self.assertTrue(cls.configure())
         ret = cls.consume()
         self.assertFalse(ret)
 
@@ -174,11 +166,12 @@ class TestSimpleConsumerLogic(TestCase, DevourTestMixin):
                 'consumer_type':'simple_consumer',
                 'dump_raw': True
             }
-        )
+        )()
 
         self.assertRaises(
             NotImplementedError,
-            cls
+            getattr(cls, cls.digest_name),
+            1
         )
 
     @mock.patch('devour.consumers.ClientHandler')
@@ -189,30 +182,14 @@ class TestSimpleConsumerLogic(TestCase, DevourTestMixin):
                 'consumer_type':'simple_consumer',
                 'dump_raw': True
             }
-        )
+        )()
 
         self.assertRaises(
             NotImplementedError,
-            cls
+            getattr(cls, cls.digest_name),
+            1
         )
 
-    @mock.patch('devour.consumers.ClientHandler')
-    def test_config_fails_before_config(self, mocked_client):
-        cls = self.generate_subclass(
-            {
-                'topic':'topic',
-                'consumer_type':'simple_consumer',
-                'dump_raw': True
-            },
-            {
-                'digest':mock.MagicMock()
-            }
-        )(auto_start=False)
-
-        self.assertRaises(
-            exceptions.DevourConfigException,
-            cls.consume
-        )
 
 class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):
     @mock.patch('devour.consumers.ClientHandler')
@@ -535,7 +512,8 @@ class TestBalancedConsumerLogic(TestCase, DevourTestMixin):
             {
                 'topic':'topic',
                 'consumer_type':'balanced_consumer',
-                'dump_raw': True
+                'dump_raw': True,
+                'config': {'consumer_group': 'fakegroup'}
             },
             {
                 'digest': mock.MagicMock()
@@ -545,29 +523,20 @@ class TestBalancedConsumerLogic(TestCase, DevourTestMixin):
         self.failure_one = self.generate_subclass(
             {
                 'consumer_type': 'balanced_consumer',
-                'dump_raw': True
+                'dump_raw': True,
+                'config': {'consumer_group': 'fakegroup'}
             }
         )
 
         self.failure_two = self.generate_subclass(
             {
                 'topic': 'topic',
-                'dump_raw': True
+                'dump_raw': True,
+                'config': {'consumer_group': 'fakegroup'}
             }
         )
 
         self.digest = mock.MagicMock()
-
-        self.cls = self.generate_subclass(
-            {
-                'topic':'topic',
-                'consumer_type':'balanced_consumer',
-                'dump_raw': True
-            },
-            {
-                'digest': self.digest
-            }
-        )()
 
     @mock.patch('devour.consumers.ClientHandler')
     def test_balanced_consumer_init(self, mocked):
@@ -581,13 +550,13 @@ class TestBalancedConsumerLogic(TestCase, DevourTestMixin):
 
         #missing topic
         self.assertRaises(
-            AttributeError,
+            AssertionError,
             self.failure_one
         )
 
         #missing type
         self.assertRaises(
-            AttributeError,
+            AssertionError,
             self.failure_two
         )
 
@@ -615,14 +584,14 @@ class TestBalancedConsumerLogic(TestCase, DevourTestMixin):
             {
                 'topic':'topic',
                 'consumer_type':'balanced_consumer',
-                'dump_raw': True
+                'dump_raw': True,
+                'config': {'consumer_group': 'fakegroup'}
             },
             {
                 'digest': self.digest
             }
-        )(auto_start=False)
+        )()
 
-        self.assertTrue(cls.configure())
         mocked_client.assert_called_once_with(hosts='fakehost:fakeport', ssl_config=None, zookeeper_hosts=None)
         mocked_client.return_value.topics.__getitem__.assert_called_once_with('topic')
         mocked_topic.get_balanced_consumer.assert_called_once()
@@ -656,14 +625,14 @@ class TestBalancedConsumerLogic(TestCase, DevourTestMixin):
             {
                 'topic':'topic',
                 'consumer_type':'balanced_consumer',
-                'dump_raw': True
+                'dump_raw': True,
+                'config': {'consumer_group': 'fakegroup'}
             },
             {
                 'digest': self.digest
             }
         )()
 
-        self.assertTrue(cls.configure())
         ret = cls.consume()
         self.assertFalse(ret)
 
@@ -680,13 +649,15 @@ class TestBalancedConsumerLogic(TestCase, DevourTestMixin):
             {
                 'topic':'topic',
                 'consumer_type':'balanced_consumer',
-                'dump_raw': True
+                'dump_raw': True,
+                'config': {'consumer_group': 'fakegroup'}
             }
-        )
+        )()
 
         self.assertRaises(
             NotImplementedError,
-            cls
+            getattr(cls, cls.digest_name),
+            1
         )
 
     @mock.patch('devour.consumers.ClientHandler')
@@ -695,13 +666,15 @@ class TestBalancedConsumerLogic(TestCase, DevourTestMixin):
             {
                 'topic':'topic',
                 'consumer_type':'balanced_consumer',
-                'dump_raw': True
+                'dump_raw': True,
+                'config': {'consumer_group': 'fakegroup'}
             }
-        )
+        )()
 
         self.assertRaises(
             NotImplementedError,
-            cls
+            getattr(cls, cls.digest_name),
+            1
         )
 
     @mock.patch('devour.consumers.ClientHandler')
@@ -715,11 +688,11 @@ class TestBalancedConsumerLogic(TestCase, DevourTestMixin):
             {
                 'digest':mock.MagicMock()
             }
-        )(auto_start=False)
+        )
 
         self.assertRaises(
             exceptions.DevourConfigException,
-            cls.consume
+            cls
         )
 
 class TestBalancedConsumerArgValidation(TestCase, DevourTestMixin):
@@ -729,7 +702,8 @@ class TestBalancedConsumerArgValidation(TestCase, DevourTestMixin):
             {
                 'topic':'topic',
                 'consumer_type':'balanced_consumer',
-                'dump_raw': True
+                'dump_raw': True,
+                'config': {'consumer_group': 'fakegroup'}
             },
             {
                 'digest': mock.MagicMock()

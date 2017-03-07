@@ -84,13 +84,16 @@ class DevourConsumer(object):
         elif self.dump_obj:
             formatted = lambda m: digest(m.offset, m)
         else:
-            formatted = lambda m: digest(
-                m.offset,
-                **self.schema_class(json.loads(m.value)).data
-            )
+            if hasattr(self, schema_class):
+                formatted = lambda m: digest(
+                    m.offset,
+                    **self.schema_class(json.loads(m.value)).data
+                )
+            else:
+                formatted = lambda m: digest(m.offset, json.loads(m.value))
 
         return formatted
 
     def digest(self, offset, *args, **kwargs):
         raise NotImplementedError(
-            'digest method not implemented on {0}'.format(self.__class_.__name__))
+            'digest method not implemented on {0}'.format(self.__class__.__name__))
