@@ -30,7 +30,8 @@ class DevourConsumer(object):
         # not required
         self.dump_raw = getattr(self, 'dump_raw', False)
         self.dump_obj = getattr(self, 'dump_obj', False)
-        self.dump_json = getattr(self, 'dump_json', False)
+        self.dump_json = getattr(self, 'dump_json',
+                            not (self.dump_obj or self.dump_raw)) # set default
 
         # required attrs
         validation_message = '{0} requires {1} to be declared'
