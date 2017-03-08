@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='devour',
-    version='0.4.3',
+    version='0.6',
     url='',
     author='http://github.com/brandoshmando',
     author_email='brancraft@gmail.com',

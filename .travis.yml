@@ -6,4 +6,4 @@ install:
   - "pip install -r requirements.txt"
   - "pip install ."
 # command to run tests
-script: nosetests --nologcapture
+script: cd ./tests && nosetests --nologcapture

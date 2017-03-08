@@ -4,10 +4,12 @@ except ImportError:
     import json
 from django.db import models
 from django.contrib.contenttypes.models import ContentType
-from devour.django import schemas, common, kafka
+from devour.django import schemas, common
+from devour.producers import GenericProducer
+from devour import kafka
 
 
-class ProducerModel(models.Model):
+class ProducerModel(models.Model, GenericProducer):
     _produce = None
     _produce_extras = None
 
@@ -24,7 +26,12 @@ class ProducerModel(models.Model):
         self._produce_extras = kwargs.pop('produce_extras', None)
         super(ProducerModel, self).delete(*args, **kwargs)
 
-    def produce(self, event=None, created=None, deleted=None, produce_extras=None):
+    def produce(self, event=None, produce_extras=None, created=None, deleted=None):
+        """
+        master produce method. no need to override. use helper methods
+        to tweak message data.
+        """
+
         assert hasattr(self, 'ProducerConfig'), (
             'Model {0} requires ProducerConfig class to be declared.'.format(self.__class__.__name__)
         )
@@ -41,63 +48,27 @@ class ProducerModel(models.Model):
 
         if not event:
             event = self._get_event(created, deleted)
-        topic = self.get_topic(event)
 
+        super(ModelProducer, self).produce(event, produce_extras)
+
+    def get_message(self, event, topic, produce_extras=None):
+        """
+        avoid overriding this method. if custom tweaks to
+        message are needed, do so with schema logic
+        """
         source = self.get_source(event, topic)
         schema_class = self.get_schema(event, topic)
-        partition_key = self.get_partition_key(event, topic)
-
-        message = schema_class(
-            instance=self,
-            context={'topic': topic, 'event': event, 'source': source},
-            extra_data=produce_extras
-        ).data
-
-        p = kafka.get_producer(topic, self.ProducerConfig.producer_type)
-        p.produce(message, partition_key)
-
-    def get_topic(self, event):
-        """
-        override this with custom logic
-        to return desired topic name (str)
-        based on event. should never return None
-        """
-
-        return getattr(self.ProducerConfig, 'topic', self._get_generic_topic())
-
-    def get_source(self, event, topic):
-        return self.__class__.__name__
-
-    def get_schema(self, event, topic):
-        """
-        override this with custom logic
-        to return desired schema class
-        based on event or topic. should never return None
-        """
-
-        schema_class = getattr(self.ProducerConfig, 'schema_class', None)
 
         assert schema_class is not None, (
             '{0} requires a schema_class to be declared on ProducerConfig class'.format(self.__class__.__name__)
         )
 
-        return schema_class
+        message_data = schema_class(
+            instance=self.payload,
+            produce_extras=produce_extras
+        ).data
 
-    def get_partition_key(self, event, topic):
-        """
-        attempts to get partition key from your model based on topic name. avoid
-        overriding this. complex partitioning logic should be done
-        on initial save of your model as you don't want such
-        logic to be called with each produce event.
-        """
-
-        key = None
-        if hasattr(self, topic +'_partition_key'):
-            key = getattr(self, attr)
-        elif hasattr(self, 'partition_key'):
-            key = getattr(self, 'partition_key')
-
-        return key
+        return message_data
 
     def _get_event(self, created, deleted):
         """
@@ -129,4 +100,4 @@ class ProducerModel(models.Model):
         content_type = ContentType.objects.get_for_model(self.__class__)
         app_label = content_type.app_label
 
-        return '{0}__{1}'.format(app_label, self.__class__.__name__)
+        return super(ProducerModel, self)._get_generic_topic(identifier=app_label)

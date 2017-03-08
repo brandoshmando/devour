@@ -6,7 +6,7 @@ from devour.exceptions import DevourConfigException
 from devour.utils.helpers import validate_config
 from devour.utils.loaders import load_module, load_consumer_class
 from devour.validators import  CONFIG_VALIDATOR
-from devour.producers import _ProducerProxy
+from devour.proxies import _ProducerProxy
 
 
 class ClientHandler(object):
