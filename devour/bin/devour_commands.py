@@ -5,8 +5,8 @@ from devour.utils.helpers import validate_config
 
 def parse_args(args):
     p = argparse.ArgumentParser()
-    p.add_argument('consumer_name')
     p.add_argument('method')
+    p.add_argument('consumer_name')
 
     return p.parse_args(args)
 

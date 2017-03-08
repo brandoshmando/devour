@@ -8,14 +8,10 @@ from devour.utils.helpers import validate_config
 
 class TestScript(TestCase):
     def test_parse_args_success(self):
-        arg_map = {
-            'method': 'consume',
-            'consumer_name': 'test'
-        }
-
-        ret = parse_args(arg_map.values())
-        self.assertEqual(ret.method, arg_map['method'])
-        self.assertEqual(ret.consumer_name, arg_map['consumer_name'])
+        args = ['consume', 'test']
+        ret = parse_args(args)
+        self.assertEqual(ret.method, args[0])
+        self.assertEqual(ret.consumer_name, args[1])
 
     def test_parse_args_failure(self):
         arg_map = {}
@@ -187,6 +183,37 @@ class TestConfigValidation(TestCase):
 
         # invalid
         args_dict['broker_version'] = 1
+        self.assertRaises(
+            exceptions.DevourConfigException,
+            validate_config,
+            CONFIG_VALIDATOR,
+            args_dict
+        )
+
+    def test_ssl_config(self):
+        #valid
+        args_dict = {
+            'hosts':'fakehost:fakeport',
+            'ssl_config': {
+                'cafile': './fake/path/',
+                'certfile': './fake/path/',
+                'keyfile': './fake/path/',
+                'password': './fake/path/'
+            }
+        }
+
+        ret = validate_config(CONFIG_VALIDATOR, args_dict)
+        self.assertTrue(ret)
+
+        args_dict['ssl_config']['certfile'] = 1
+        self.assertRaises(
+            exceptions.DevourConfigException,
+            validate_config,
+            CONFIG_VALIDATOR,
+            args_dict
+        )
+
+        del args_dict['ssl_config']['cafile']
         self.assertRaises(
             exceptions.DevourConfigException,
             validate_config,

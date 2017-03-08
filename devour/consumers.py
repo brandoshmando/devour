@@ -12,11 +12,13 @@ class DevourConsumer(object):
 
     def __init__(self, auto_start=True):
         """
-        :consumer_topic: - string name of topic to be consumed from
-        :consumer_digest: - string name of the function used to manipulate kafka output, defaults to 'digest'
+        :topic: - string name of topic to be consumed from
+        :digest_name: - string name of the function used to manipulate kafka output, defaults to 'digest'
         :consumer_type: - type of pykafka consumer to use. simple_consumer or balanced_consumer
-        :consumer_config: - dictionary containing all kwargs needed to config the consumer type. Any extras
+        :config: - dictionary containing all kwargs needed to config the consumer type. Any extras
         will be ignored
+        :schema_class: - Schema class used to extract data from messages. Only required when
+        using dump_json
 
         :dump_json: - bool determines if consumer loads json message.value into consumer.digest()
         :dump_raw: - bool determines if consumer dumps raw message.value into consumer.digest()
@@ -26,29 +28,33 @@ class DevourConsumer(object):
         """
 
         # required attrs
-        self.topic = getattr(self, 'consumer_topic', None)
+        self.topic = getattr(self, 'topic', None)
         self.type = getattr(self, 'consumer_type', None)
-        self.digest_name = getattr(self, 'consumer_digest', 'digest')
-        self.config = getattr(self, 'consumer_config', {})
+        self.digest_name = getattr(self, 'digest_name', 'digest')
+        self.config = getattr(self, 'config', {})
+        self.schema_class = getattr(self, 'schema_class', None)
+
+        # not required
+        self.dump_raw = getattr(self, 'dump_raw', False)
+        self.dump_obj = getattr(self, 'dump_obj', False)
+        self.dump_json = getattr(self, 'dump_json', False)
 
         required = [
             'topic',
-            'type'
+            'type',
+            'schema_class'
         ]
 
         for req in required:
             if not getattr(self, req, None):
+                if not self.dump_json and (self.dump_raw or self.dump_obj) and req == 'schema_class':
+                    continue
                 raise AttributeError("{0} must declare a consumer_{1} attrubute.".format(self.__class__.__name__, req))
 
         if not callable(getattr(self, self.digest_name, None)):
             raise NotImplementedError(
                 '{0} must be a function on {1}'.format(self.digest_name, self.__class__.__name__)
             )
-
-        # not required
-        self.dump_json = getattr(self, 'dump_json', False)
-        self.dump_raw = getattr(self, 'dump_raw', False)
-        self.dump_obj = getattr(self, 'dump_obj', False)
 
         # internal
         self.client = None
@@ -59,7 +65,7 @@ class DevourConsumer(object):
 
     def configure(self):
         if self.config:
-            validate_config(validators, getattr(self.type.upper() + '_VALIDATOR'), self.config)
+            validate_config(getattr(validators, self.type.upper() + '_VALIDATOR'), self.config)
 
         # setup log
         log_name = self.config.pop('log_name', __name__)
@@ -92,12 +98,12 @@ class DevourConsumer(object):
 
         if self.dump_raw:
             formatted = lambda m: digest(m.offset, m.value)
-        elif dump_obj:
+        elif self.dump_obj:
             formatted = lambda m: digest(m.offset, m)
         else:
             formatted = lambda m: digest(
                 m.offset,
-                **json.loads(self.schema_class(m.value).data)
+                **self.schema_class(json.loads(m.value)).data
             )
 
         return formatted

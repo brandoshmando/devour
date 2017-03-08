@@ -12,8 +12,9 @@ class TestSimpleConsumerLogic(TestCase, DevourTestMixin):
     def setUp(self, mocked_client):
         self.success = self.generate_subclass(
             {
-                'consumer_topic':'topic',
-                'consumer_type':'simple_consumer'
+                'topic':'topic',
+                'consumer_type':'simple_consumer',
+                'dump_raw': True
             },
             {
                 'digest': mock.MagicMock()
@@ -21,18 +22,31 @@ class TestSimpleConsumerLogic(TestCase, DevourTestMixin):
         )
 
         self.failure_one = self.generate_subclass(
-            {'consumer_type': 'simple_consumer'}
+            {
+                'consumer_type': 'simple_consumer',
+                'dump_raw': True
+            }
         )
 
         self.failure_two = self.generate_subclass(
-            {'consumer_topic': 'topic'}
+            {
+                'topic': 'topic',
+                'dump_raw': True
+            }
+        )
+
+        self.failure_three = self.generate_subclass(
+            {
+                'topic': 'topic',
+                'consumer_type': 'simple_consumer'
+            }
         )
 
         self.digest = mock.MagicMock()
 
         self.cls = self.generate_subclass(
             {
-                'consumer_topic':'topic',
+                'topic':'topic',
                 'consumer_type':'simple_consumer',
                 'dump_raw': True
             },
@@ -63,9 +77,15 @@ class TestSimpleConsumerLogic(TestCase, DevourTestMixin):
             self.failure_two
         )
 
+        #missing schema_class
+        self.assertRaises(
+            AttributeError,
+            self.failure_three
+        )
+
     @mock.patch('devour.handlers.load_module')
     @mock.patch('devour.handlers.pykafka.KafkaClient')
-    def test_consumer_configure_simple_consumer_success(self, mocked_client, mocked_load):
+    def test_configure_simple_consumer_success(self, mocked_client, mocked_load):
         mocked_client.reset_mock()
         mocked_load.reset_mock()
 
@@ -85,7 +105,7 @@ class TestSimpleConsumerLogic(TestCase, DevourTestMixin):
 
         cls = self.generate_subclass(
             {
-                'consumer_topic':'topic',
+                'topic':'topic',
                 'consumer_type':'simple_consumer',
                 'dump_raw': True
             },
@@ -126,7 +146,7 @@ class TestSimpleConsumerLogic(TestCase, DevourTestMixin):
 
         cls = self.generate_subclass(
             {
-                'consumer_topic':'topic',
+                'topic':'topic',
                 'consumer_type':'simple_consumer',
                 'dump_raw': True
             },
@@ -150,8 +170,9 @@ class TestSimpleConsumerLogic(TestCase, DevourTestMixin):
     def test_digest_not_implemented_default(self, mocked_client):
         cls = self.generate_subclass(
             {
-                'consumer_topic':'topic',
-                'consumer_type':'simple_consumer'
+                'topic':'topic',
+                'consumer_type':'simple_consumer',
+                'dump_raw': True
             }
         )
 
@@ -164,8 +185,9 @@ class TestSimpleConsumerLogic(TestCase, DevourTestMixin):
     def test_digest_not_implemented_custom(self, mocked_client):
         cls = self.generate_subclass(
             {
-                'consumer_topic':'topic',
-                'consumer_type':'simple_consumer'
+                'topic':'topic',
+                'consumer_type':'simple_consumer',
+                'dump_raw': True
             }
         )
 
@@ -178,8 +200,9 @@ class TestSimpleConsumerLogic(TestCase, DevourTestMixin):
     def test_config_fails_before_config(self, mocked_client):
         cls = self.generate_subclass(
             {
-                'consumer_topic':'topic',
-                'consumer_type':'simple_consumer'
+                'topic':'topic',
+                'consumer_type':'simple_consumer',
+                'dump_raw': True
             },
             {
                 'digest':mock.MagicMock()
@@ -196,8 +219,9 @@ class TestSimpleConsumerArgValidation(TestCase, DevourTestMixin):
     def setUp(self, mocked_client):
         self.cls = self.generate_subclass(
             {
-                'consumer_topic':'topic',
-                'consumer_type':'simple_consumer'
+                'topic':'topic',
+                'consumer_type':'simple_consumer',
+                'dump_raw': True
             },
             {
                 'digest': mock.MagicMock()
@@ -509,8 +533,9 @@ class TestBalancedConsumerLogic(TestCase, DevourTestMixin):
     def setUp(self, mocked_client):
         self.success = self.generate_subclass(
             {
-                'consumer_topic':'topic',
-                'consumer_type':'balanced_consumer'
+                'topic':'topic',
+                'consumer_type':'balanced_consumer',
+                'dump_raw': True
             },
             {
                 'digest': mock.MagicMock()
@@ -518,18 +543,24 @@ class TestBalancedConsumerLogic(TestCase, DevourTestMixin):
         )
 
         self.failure_one = self.generate_subclass(
-            {'consumer_type': 'balanced_consumer'}
+            {
+                'consumer_type': 'balanced_consumer',
+                'dump_raw': True
+            }
         )
 
         self.failure_two = self.generate_subclass(
-            {'consumer_topic': 'topic'}
+            {
+                'topic': 'topic',
+                'dump_raw': True
+            }
         )
 
         self.digest = mock.MagicMock()
 
         self.cls = self.generate_subclass(
             {
-                'consumer_topic':'topic',
+                'topic':'topic',
                 'consumer_type':'balanced_consumer',
                 'dump_raw': True
             },
@@ -582,7 +613,7 @@ class TestBalancedConsumerLogic(TestCase, DevourTestMixin):
 
         cls = self.generate_subclass(
             {
-                'consumer_topic':'topic',
+                'topic':'topic',
                 'consumer_type':'balanced_consumer',
                 'dump_raw': True
             },
@@ -623,7 +654,7 @@ class TestBalancedConsumerLogic(TestCase, DevourTestMixin):
 
         cls = self.generate_subclass(
             {
-                'consumer_topic':'topic',
+                'topic':'topic',
                 'consumer_type':'balanced_consumer',
                 'dump_raw': True
             },
@@ -647,8 +678,9 @@ class TestBalancedConsumerLogic(TestCase, DevourTestMixin):
     def test_digest_not_implemented_default_balanced_consumer(self, mocked_client):
         cls = self.generate_subclass(
             {
-                'consumer_topic':'topic',
-                'consumer_type':'balanced_consumer'
+                'topic':'topic',
+                'consumer_type':'balanced_consumer',
+                'dump_raw': True
             }
         )
 
@@ -661,8 +693,9 @@ class TestBalancedConsumerLogic(TestCase, DevourTestMixin):
     def test_digest_not_implemented_custom_balanced_consumer(self, mocked_client):
         cls = self.generate_subclass(
             {
-                'consumer_topic':'topic',
-                'consumer_type':'balanced_consumer'
+                'topic':'topic',
+                'consumer_type':'balanced_consumer',
+                'dump_raw': True
             }
         )
 
@@ -675,8 +708,9 @@ class TestBalancedConsumerLogic(TestCase, DevourTestMixin):
     def test_consume_fails_before_config_balanced_consumer(self, mocked_client):
         cls = self.generate_subclass(
             {
-                'consumer_topic':'topic',
-                'consumer_type':'balanced_consumer'
+                'topic':'topic',
+                'consumer_type':'balanced_consumer',
+                'dump_raw': True
             },
             {
                 'digest':mock.MagicMock()
@@ -693,8 +727,9 @@ class TestBalancedConsumerArgValidation(TestCase, DevourTestMixin):
     def setUp(self, mocked_client):
         self.cls = self.generate_subclass(
             {
-                'consumer_topic':'topic',
-                'consumer_type':'balanced_consumer'
+                'topic':'topic',
+                'consumer_type':'balanced_consumer',
+                'dump_raw': True
             },
             {
                 'digest': mock.MagicMock()
