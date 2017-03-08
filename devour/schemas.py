@@ -1,7 +1,3 @@
-
-class SchemaMeta(object):
-    pass
-
 class Schema(object):
     def __init__(self, data, *args, **kwargs):
         self._init_data = data or {}
