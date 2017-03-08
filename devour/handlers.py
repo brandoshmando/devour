@@ -92,7 +92,7 @@ class ClientHandler(object):
         try:
             consumer = getattr(topic, 'get_{0}'.format(consumer_type))(**config)
         except AttributeError:
-            raise DevourConfigException('consumer_type {0} not one of simple_consumer or balanced_consumer'.format(self.type))
+            raise DevourConfigException('consumer_type {0} not one of simple_consumer or balanced_consumer'.format(self.consumer_type))
 
         return consumer
 
