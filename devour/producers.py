@@ -33,8 +33,6 @@ class GenericProducer(BaseProducer):
 
     def produce(self, event, produce_extras=None):
         topic = self.get_topic(event)
-        source = self.get_source(event, topic)
-        schema_class = self.get_schema(event, topic)
         partition_key = self.get_partition_key(event, topic)
         message = self.get_message(produce_extras)
 
