@@ -1,4 +1,4 @@
--e git+git@github.com:brandoshmando/devour.git@114c176bf77b5205d46f022a638dcd4af6a9c2e0#egg=devour-0.6
+devour==0.6
 Django==1.10.5
 django-filter==1.0.1
 djangorestframework==3.5.4
