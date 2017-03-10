@@ -8,10 +8,7 @@ setup(
     author_email='brancraft@gmail.com',
     license='MIT',
     packages=['devour', 'devour.utils', 'devour.django'],
-    install_requires=[
-        'pykafka',
-        'kazoo'
-    ],
+    install_requires=['pykafka',],
     include_package_data=True,
     test_suite='nose.collector',
     tests_require=['nose'],

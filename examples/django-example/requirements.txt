@@ -1,0 +1,11 @@
+-e git+git@github.com:brandoshmando/devour.git@114c176bf77b5205d46f022a638dcd4af6a9c2e0#egg=devour-0.6
+Django==1.10.5
+django-filter==1.0.1
+djangorestframework==3.5.4
+gevent==1.2.1
+greenlet==0.4.12
+Markdown==2.6.8
+pykafka==2.5.0
+six==1.10.0
+tabulate==0.7.7
+ujson==1.35
