@@ -21,20 +21,17 @@ class ModelSchema(Schema):
     def data(self):
         source = self._context['source']
         event = self._context['event']
-        topic = self._context['topic']
 
         if not self._serialized_data:
             if not self._instance:
                 super(ModelSchema, self).data
                 delf._serialized_data['source'] = source
                 self._serialized_data['event'] = event
-                self._serialized_data['topic'] = topic
             else:
                 #convert to python dictionary
                 self._serialized_data = {
                     'source': source,
-                    'event': event,
-                    'topic': topic,
+                    'event': event
                 }
 
                 for field_name in self.Meta.attributes:

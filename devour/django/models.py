@@ -49,7 +49,7 @@ class ProducerModel(models.Model, GenericProducer):
         if not event:
             event = self._get_event(created, deleted)
 
-        super(ModelProducer, self).produce(event, produce_extras)
+        super(ProducerModel, self).produce(event, produce_extras)
 
     def get_message(self, event, topic, produce_extras=None):
         """
@@ -64,7 +64,8 @@ class ProducerModel(models.Model, GenericProducer):
         )
 
         message_data = schema_class(
-            instance=self.payload,
+            instance=self,
+            context={'source': source, 'event': event},
             produce_extras=produce_extras
         ).data
 
@@ -79,11 +80,11 @@ class ProducerModel(models.Model, GenericProducer):
 
         event = None
         if deleted:
-            event = choices.DELETE_EVENT
+            event = common.DELETE_EVENT
         elif created:
-            event = choices.CREATE_EVENT
+            event = common.CREATE_EVENT
         elif created is False and deleted is False:
-            event = choices.UPDATE_EVENT
+            event = common.UPDATE_EVENT
 
         assert event is not None, (
             '{0} requires an event to be provided when calling .produce() manually'.format(self.__class__.__name__)

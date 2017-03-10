@@ -7,7 +7,7 @@ setup(
     author='http://github.com/brandoshmando',
     author_email='brancraft@gmail.com',
     license='MIT',
-    packages=['devour', 'devour.utils'],
+    packages=['devour', 'devour.utils', 'devour.django'],
     install_requires=[
         'pykafka',
         'kazoo'

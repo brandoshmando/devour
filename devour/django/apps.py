@@ -4,9 +4,9 @@ from django.apps import AppConfig
 from django.db.models import signals
 
 
-class SpoutConfig(AppConfig):
-    name = 'spout'
-    verbose_name = 'django-kafka-spout app config'
+class DevourConfig(AppConfig):
+    name = 'devour'
+    verbose_name = 'devour app config'
 
     def ready(self):
         from django.db.models.signals import post_save, post_delete

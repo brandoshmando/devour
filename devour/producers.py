@@ -2,12 +2,10 @@ from devour import kafka
 
 
 class BaseProducer(object):
-    def __init__(self, payload, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         assert hasattr(self, 'ProducerConfig'), (
             '{0} requires ProducerConfig class to be declared.'.format(self.__class__.__name__)
         )
-
-        self.payload = payload
         super(BaseProducer, self).__init__(*args, **kwargs)
 
     def produce(self, event=None, produce_extras=None):
@@ -30,11 +28,14 @@ class BaseProducer(object):
 
 
 class GenericProducer(BaseProducer):
+    def __init__(self, *args, **kwargs):
+        self.payload = kwargs.pop('payload', None)
+        super(GenericProducer, self).__init__(*args, **kwargs)
 
-    def produce(self, event, produce_extras=None):
+    def produce(self, event=None, produce_extras=None):
         topic = self.get_topic(event)
         partition_key = self.get_partition_key(event, topic)
-        message = self.get_message(produce_extras)
+        message = self.get_message(event, topic, produce_extras)
 
         p = kafka.get_producer(topic, self.ProducerConfig.producer_type)
         p.produce(message, partition_key)
@@ -64,7 +65,7 @@ class GenericProducer(BaseProducer):
         based on event or topic. should never return None
         """
 
-        schema_class = getattr(self, 'schema_class', None)
+        schema_class = getattr(self.ProducerConfig, 'schema_class', None)
         return schema_class
 
     def get_partition_key(self, event, topic):
@@ -95,6 +96,7 @@ class GenericProducer(BaseProducer):
         if schema_class:
             message_data = schema_class(
                 data=self.payload,
+                context={'source': source, 'event': event},
                 produce_extras=produce_extras
             ).data
         else:

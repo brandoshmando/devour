@@ -5,5 +5,3 @@ except ImportError:
 import os
 
 os.environ.setdefault('KAFKA_SETTINGS_PATH', os.environ.get('DJANGO_SETTINGS_MODULE'))
-
-default_app_config = 'spout.apps.SpoutConfig'
