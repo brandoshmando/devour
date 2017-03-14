@@ -1,11 +1,12 @@
 from __future__ import unicode_literals
 
+import os
 from django.apps import AppConfig
 from django.db.models import signals
 
 
 class DevourConfig(AppConfig):
-    name = 'devour'
+    name = 'devour.django'
     verbose_name = 'devour app config'
 
     def ready(self):
