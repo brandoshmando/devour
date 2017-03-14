@@ -60,10 +60,3 @@ class TestSchema(TestCase):
         ret = schema.data
         del self.nested_data['key_1']['nested_2']
         self.assertEqual(ret, self.nested_data)
-
-    def test_no_meta_causes_assertion_error(self):
-        try:
-            schema = ExampleSchemaNoMeta(data=self.nested_data)
-            raise Exception('Schema initialized without Meta class')
-        except AssertionError:
-            pass
