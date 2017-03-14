@@ -7,7 +7,7 @@ setup(
     author='http://github.com/brandoshmando',
     author_email='brancraft@gmail.com',
     license='MIT',
-    packages=['devour', 'devour.utils', 'devour.django'],
+    packages=['devour', 'devour.utils', 'devour.django', 'devour.django.management.commands'],
     install_requires=['pykafka',],
     include_package_data=True,
     test_suite='nose.collector',
