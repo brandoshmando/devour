@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'example',
     'devour',
-    'rest_framework'
+    'rest_framework',
+    'shell_plus'
 ]
 
 MIDDLEWARE = [

@@ -1,56 +1,36 @@
-import inspect
-from devour.schemas import Schema
 from django.apps import apps
+from django.db import models
+from devour.schemas import Schema
 
 class ModelSchema(Schema):
 
-    def __init__(self, data={}, instance=None, extra_data=None, context={}, *args, **kwargs):
-        assert (data or instance), (
-            '{0}.__init__() requires either data or instance as args'.format(self.__class__.__name__)
-        )
-
+    def __init__(self, instance, extras={}):
         self._instance = instance
-        self._extra_data = extra_data
-        self._context = context
-        super(ModelSchema, self).__init__(data, *args, **kwargs)
+        self._model = self._instance.__class__
+        self._extras = extras
+        self._serialized_data = {}
 
-        if not getattr(self.Meta, 'model', None):
-            setattr(self.Meta, 'model', apps.get_model(self.Meta.model))
-
-    @property
-    def data(self):
-        source = self._context['source']
-        event = self._context['event']
-
-        if not self._serialized_data:
-            if not self._instance:
-                super(ModelSchema, self).data
-                delf._serialized_data['source'] = source
-                self._serialized_data['event'] = event
-            else:
-                #convert to python dictionary
-                self._serialized_data = {
-                    'source': source,
-                    'event': event
-                }
-
-                for field_name in self.Meta.attributes:
-                    if hasattr(self._instance, field_name):
-                        val = getattr(self._instance, field_name)
-                        if inspect.isclass(val):
-                            # TODO: Logic that determines class type and value that should be gleaned
-                            pass
-                        self._serialized_data[field_name] = val
-
-                if self._init_data:
-                    for key,val in self._init_data.items():
-                        if key in self.Meta.attributes:
-                            if inspect.isclass(val):
-                                # TODO: Raise exception that object is not json serailizable
+    def serialize(self):
+        if self._instance:
+            serialized_data = {}
+            attrs = self.get_attributes()
+            for field_name in attrs:
+                if hasattr(self._instance, field_name):
+                    val = getattr(self._instance, field_name)
+                    if hasattr(val, '__class__'):
+                        if issubclass(val.__class__, models.Model):
+                            try:
+                                schema = getattr(self, key)
+                                val = schema(val).data
+                            except AttributeError:
+                                # look for schema provided for
+                                # attr. let pass and add full dict
+                                # if none declared
                                 pass
-                            self._serialized_data[key] = val
 
-            if self._extra_data:
-                self._serialized_data['extra_data'] = self._extra_data
+                    serialized_data[field_name] = val
 
-        return self._serialized_data
+        return serialized_data
+
+    def get_all(self):
+        return [f.name for f in self._model._meta.get_fields()]

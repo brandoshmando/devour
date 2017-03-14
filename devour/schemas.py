@@ -1,22 +1,31 @@
 class Schema(object):
-    def __init__(self, data, *args, **kwargs):
-        self._init_data = data or {}
-        self._serialized_data = None
-
-        assert hasattr(self, 'Meta'), (
-            '{0} requires a Meta class to be declared'.format(self.__class__.__name__)
-        )
+    def __init__(self, data, extras={}):
+        self._data = data
+        self._extras = extras
+        self._serialized_data = {}
 
     @property
     def data(self):
-        if not hasattr(self.Meta, 'attributes'):
-            return self._init_data
-
+        # immutable after the first call
         if not self._serialized_data:
-            self._serialized_data = {}
-            for key in self.Meta.attributes:
-                val = self._init_data.get(key)
-                if type(val) == dict:
+            self._serialized_data = self.serialize()
+            if self._extras:
+                self._serialized_data.update(self._extras)
+        return self._serialized_data
+
+    def serialize(self):
+        serialized_data = {}
+        if self._data:
+            attrs = self.get_attributes()
+            for key in attrs:
+                try:
+                    val = self._data[key]
+                except KeyError:
+                    # don't add attributes that
+                    # don't exist in dict already
+                    continue
+
+                if isinstance(val, dict):
                     try:
                         schema = getattr(self, key)
                         val = schema(val).data
@@ -26,6 +35,14 @@ class Schema(object):
                         # if none declared
                         pass
 
-                self._serialized_data[key] = val
+                serialized_data[key] = val
+        return serialized_data
 
-        return self._serialized_data
+    def get_all(self):
+        return self._data.keys()
+
+    def get_attributes(self):
+        attributes = None
+        if hasattr(self, 'Meta'):
+            attributes = getattr(self.Meta, 'attributes', None)
+        return attributes or self.get_all()

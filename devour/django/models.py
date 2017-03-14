@@ -5,36 +5,42 @@ except ImportError:
 from django.db import models
 from django.contrib.contenttypes.models import ContentType
 from devour.django import schemas, common
-from devour.producers import GenericProducer
+from devour.producers import BaseProducer
 from devour import kafka
 
 
-class ProducerModel(models.Model, GenericProducer):
-    _produce = None
-    _produce_extras = None
+class ProducerModel(models.Model, BaseProducer):
+    _produce = False
+    _produce_event = None
+    _produce_source = None
+    _produce_extras = {}
+    _produce_context = {}
 
     class Meta:
         abstract = True
 
     def save(self, *args, **kwargs):
-        self._produce = kwargs.pop('produce', None)
-        self._produce_extras = kwargs.pop('produce_extras', None)
+        self._produce = kwargs.pop('produce', True)
+        self._produce_event = kwargs.pop('produce_event', None)
+        self._produce_source = kwargs.pop('produce_source', None)
+        self._produce_extras = kwargs.pop('produce_extras', {})
+        self._produce_context = kwargs.pop('produce_context', {})
         super(ProducerModel, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        self._produce = kwargs.pop('produce', None)
-        self._produce_extras = kwargs.pop('produce_extras', None)
+        import pdb; pdb.set_trace()
+        self._produce = kwargs.pop('produce', True)
+        self._produce_event = kwargs.pop('produce_event', None)
+        self._produce_source = kwargs.pop('produce_source', None)
+        self._produce_extras = kwargs.pop('produce_extras', {})
+        self._produce_context = kwargs.pop('produce_context', {})
         super(ProducerModel, self).delete(*args, **kwargs)
 
-    def produce(self, event=None, produce_extras=None, created=None, deleted=None):
+    def produce(self, event=None, source=None, extras={}, context={}, created=False, deleted=False):
         """
         master produce method. no need to override. use helper methods
         to tweak message data.
         """
-
-        assert hasattr(self, 'ProducerConfig'), (
-            'Model {0} requires ProducerConfig class to be declared.'.format(self.__class__.__name__)
-        )
 
         # Prevent model from producing if
         # user manually passes in produce=False or
@@ -48,26 +54,22 @@ class ProducerModel(models.Model, GenericProducer):
 
         if not event:
             event = self._get_event(created, deleted)
+        if not source:
+            source = self.__class__.__name__
 
-        super(ProducerModel, self).produce(event, produce_extras)
+        super(ProducerModel, self).produce(event, source, extras, context)
 
-    def get_message(self, event, topic, produce_extras=None):
+    def get_schema(self, event, source, context):
+        schema_class = super(ProducerModel, self).get_schema(event, source, context)
+        return schema_class or schemas.ModelSchema
+
+    def get_message(self, data, schema_class):
         """
         avoid overriding this method. if custom tweaks to
         message are needed, do so with schema logic
         """
-        source = self.get_source(event, topic)
-        schema_class = self.get_schema(event, topic)
 
-        assert schema_class is not None, (
-            '{0} requires a schema_class to be declared on ProducerConfig class'.format(self.__class__.__name__)
-        )
-
-        message_data = schema_class(
-            instance=self,
-            context={'source': source, 'event': event},
-            produce_extras=produce_extras
-        ).data
+        message_data = schema_class(instance=self).data
 
         return message_data
 
@@ -86,15 +88,11 @@ class ProducerModel(models.Model, GenericProducer):
         elif created is False and deleted is False:
             event = common.UPDATE_EVENT
 
-        assert event is not None, (
-            '{0} requires an event to be provided when calling .produce() manually'.format(self.__class__.__name__)
-        )
-
         return event
 
     def _get_generic_topic(self):
         """
-        attempts to create a generic topic if topic is not provided on
+        creates a generic topic name if topic is not provided on
         ProducerConfig. based on app name and class name.
         """
 
