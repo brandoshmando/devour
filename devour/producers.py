@@ -40,7 +40,7 @@ class BaseProducer(object):
         """
 
         schema_class = getattr(self.ProducerConfig, 'schema_class', None)
-        return schema_class or schemas.Schema
+        return schema_class
 
     def get_partition_key(self, event, source, context):
         """
@@ -53,7 +53,7 @@ class BaseProducer(object):
             key = getattr(self, 'partition_key')
         return key
 
-    def get_message(self, data, schema_class):
+    def get_message(self, extras, schema_class):
         """
         avoid overriding this method. if custom tweaks to
         message are needed, do so with schema logic
@@ -75,13 +75,13 @@ class Producer(BaseProducer):
         self.payload = payload
         super(Producer, self).__init__(*args, **kwargs)
 
-    def get_message(self, data, schema_class):
+    def get_message(self, extras, schema_class):
         """
         avoid overriding this method. if custom tweaks to
         message are needed, do so with schema logic
         """
 
-        message_data = schema_class(data=self.payload).data
+        message_data = schema_class(data=self.payload, extras=extras).data
 
         return message_data
 

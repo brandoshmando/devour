@@ -63,14 +63,13 @@ class ProducerModel(models.Model, BaseProducer):
         schema_class = super(ProducerModel, self).get_schema(event, source, context)
         return schema_class or schemas.ModelSchema
 
-    def get_message(self, data, schema_class):
+    def get_message(self, extras, schema_class):
         """
         avoid overriding this method. if custom tweaks to
         message are needed, do so with schema logic
         """
 
-        message_data = schema_class(instance=self).data
-
+        message_data = schema_class(instance=self, extras=extras).data
         return message_data
 
     def _get_event(self, created, deleted):
