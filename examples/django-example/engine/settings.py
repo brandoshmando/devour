@@ -129,6 +129,7 @@ KAFKA_CONFIG = {
         'zookeeper_hosts': os.environ.get('ZOOKEEPER')
     },
     'consumer_routes': {
-        'simple_message': 'example.microservices.simple_message_consumer.SimpleMessageConsumer'
+        'simple_message': 'example.microservices.simple_message.consumers.SimpleMessageConsumer',
+        'problems': 'example.microservices.math.consumers.BalancedMathConsumer'
     }
 }
