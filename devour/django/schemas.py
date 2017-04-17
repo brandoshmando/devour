@@ -4,7 +4,12 @@ from devour.schemas import Schema
 
 class ModelSchema(Schema):
 
-    def __init__(self, instance, extras={}):
+    def __init__(self, data=None, instance=None, extras={}):
+        assert data or instance, (
+            '%s requires data or instance.' % self.__class__.__name__
+        )
+
+        self._data = data
         self._instance = instance
         self._model = self._instance.__class__
         self._extras = extras
@@ -29,6 +34,8 @@ class ModelSchema(Schema):
                                 pass
 
                     serialized_data[field_name] = val
+        else:
+            serialized_data = super(ModelSchema, self).serialize()
 
         return serialized_data
 
