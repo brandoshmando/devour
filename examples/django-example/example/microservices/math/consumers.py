@@ -1,6 +1,6 @@
 from devour.consumers import DevourConsumer
 from devour.django import common
-from example.models import Solution
+from example.models import Solution, Problem
 from .schemas import MathSchema
 from ..config import BALANCED_CONSUMER_CONFIG
 
@@ -16,9 +16,25 @@ class BalancedMathConsumer(DevourConsumer):
         else:
             sol = Solution()
 
-        formatted = [int(i.strip()) for i in variables.split(',')]
-        sol.value = self.lcmm(*formatted)
+        if isinstance(variables, str) or isinstance(variables, unicode):
+            formatted = [int(i.strip()) for i in variables.split(',')]
+        elif isinstance(variables, list):
+            formatted = [int(i) for i in variables]
+        else:
+            print "Ill formatted variables."
+            return False
+
+        sol.value = str(self.lcmm(*formatted))
         sol.save()
+
+        # overcomplicating to demonstrate
+        # override of auto_produce
+        if event == common.CREATE_EVENT:
+            prob = Problem.objects.only('solution').get(id=id)
+
+            prob.solution = sol
+            prob.save(produce=False)
+
 
         print "Solution for problem {0} {1}: {2}".format(id, event, sol.value)
 

@@ -77,7 +77,7 @@ class ClientHandler(object):
 
         topic = self.get_topic(topic_name)
         try:
-            producer = getattr(topic, 'get_' + producer_type)()
+            producer = getattr(topic, 'get_' + producer_type)() # need to pass in kwargs here
         except AttributeError:
             raise DevourConfigException('producer_type {0} not one of sync_producer_consumer or produce'.format(producer_type))
 

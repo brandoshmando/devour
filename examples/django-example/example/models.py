@@ -14,7 +14,7 @@ class SimpleMessage(ProducerModel):
         producer_type = 'sync_producer'
 
 class Solution(models.Model):
-    value = models.IntegerField()
+    value = models.TextField(blank=True, null=True)
 
 class Problem(ProducerModel):
     variables = models.CharField(max_length=1024, validators=[validate_comma_separated_integer_list], default='0')

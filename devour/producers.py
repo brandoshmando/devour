@@ -8,7 +8,7 @@ class BaseProducer(object):
             '{0} requires ProducerConfig class to be declared.'.format(self.__class__.__name__)
         )
 
-    def produce(self, context={}):
+    def produce(self, context={}, extras={}):
         # get kafka related items
         topic = self.get_topic(context)
         partition_key = self.get_partition_key(context)
@@ -18,7 +18,7 @@ class BaseProducer(object):
 
         # build message
         schema_class = self.get_schema(context)
-        message = self.get_message(context, schema_class)
+        message = self.get_message(context, schema_class, extras)
 
         # produce message to kafka
         p.produce(message, partition_key)
@@ -53,7 +53,7 @@ class BaseProducer(object):
             key = getattr(self, 'partition_key')
         return key
 
-    def get_message(self, context, schema_class):
+    def get_message(self, context, schema_class, extras):
         """
         avoid overriding this method. if custom tweaks to
         message are needed, do so with schema logic
@@ -75,13 +75,13 @@ class Producer(BaseProducer):
         self.payload = payload
         super(Producer, self).__init__(*args, **kwargs)
 
-    def get_message(self, context, schema_class):
+    def get_message(self, context, schema_class, extras):
         """
         avoid overriding this method. if custom tweaks to
         message are needed, do so with schema logic
         """
 
-        message_data = schema_class(data=self.payload, extras=context.get('extras')).data
+        message_data = schema_class(data=self.payload, extras=extras).data
         return message_data
 
     def get_schema(self, context):
