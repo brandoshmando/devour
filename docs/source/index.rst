@@ -43,4 +43,5 @@ Sections
 .. toctree::
   :maxdepth: 3
 
+  Concepts
   Usage

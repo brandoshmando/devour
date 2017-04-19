@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Devour &mdash; devour 0.6 documentation</title>
+  <title>Python Module Index &mdash; devour 0.6 documentation</title>
   
 
   
@@ -35,8 +35,10 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="devour 0.6 documentation" href="#"/>
-        <link rel="next" title="Concepts" href="Concepts.html"/> 
+    <link rel="top" title="devour 0.6 documentation" href="index.html"/>
+ 
+
+
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -55,7 +57,7 @@
           
 
           
-            <a href="#" class="icon icon-home"> devour
+            <a href="index.html" class="icon icon-home"> devour
           
 
           
@@ -106,7 +108,7 @@
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="#">devour</a>
+          <a href="index.html">devour</a>
         
       </nav>
 
@@ -134,16 +136,14 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="#">Docs</a> &raquo;</li>
+      <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Devour</li>
+      <li>Python Module Index</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
-          
         
       </li>
     
@@ -155,65 +155,29 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="devour">
-<h1>Devour<a class="headerlink" href="#devour" title="Permalink to this headline">¶</a></h1>
-<p>Before we dive in, I want to acknowledge that Devour was built on the shoulders of giants. Those giants
-being the people at Parsely who wrote pykafka, of which this package uses a great deal of.
-If you aren&#8217;t familiar with pykafka, take some time to familiarize
-yourself as all of the low level configuration for your consumers and producers will be
-done via pykafka.</p>
-<p>Devour was created with the intention of helping
-python developers build Kafka consumers and producers in a more efficient and
-reusable way. With Devour, building your Kafka components is a simple as
-declaring a class and defining a reusable configuration. One of the key components
-of devour is the ClientHandler. The ClientHandler is a &#8216;just in time&#8217; wrapper around
-the pykafka.Client class. The client isn&#8217;t configured until the first time a consumer or
-producer is fetched. After the first fetch, the client and any kafka components are
-persisted until the current thread/process dies. This means that expensive operations
-such as configuring the client or a producer aren&#8217;t done until absolutely needed,
-and only done once allowing you to persist these components per process/thread.</p>
-<div class="section" id="roadmap">
-<h2>Roadmap<a class="headerlink" href="#roadmap" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li>Logging</li>
-<li>Python 3.x compatibility</li>
-</ul>
-</div>
-<div class="section" id="caveats">
-<h2>Caveats<a class="headerlink" href="#caveats" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li>caveat</li>
-</ul>
-</div>
-<div class="section" id="sections">
-<h2>Sections<a class="headerlink" href="#sections" title="Permalink to this headline">¶</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="Concepts.html">Concepts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Usage.html">Usage</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Usage.html#getting-started">Getting started</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Usage.html#installation">Installation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Usage.html#configuration">Configuration</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="Usage.html#consumers">Consumers</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Usage.html#django">Django</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="Usage.html#producers">Producers</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Usage.html#id1">Django</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="Usage.html#schemas">Schemas</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Usage.html#id2">Django</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</div>
-</div>
-</div>
+
+   <h1>Python Module Index</h1>
+
+   <div class="modindex-jumpbox">
+   <a href="#cap-d"><strong>d</strong></a>
+   </div>
+
+   <table class="indextable modindextable">
+     <tr class="pcap"><td></td><td>&#160;</td><td></td></tr>
+     <tr class="cap" id="cap-d"><td></td><td>
+       <strong>d</strong></td><td></td></tr>
+     <tr>
+       <td><img src="_static/minus.png" class="toggler"
+              id="toggle-1" style="display: none" alt="-" /></td>
+       <td>
+       <code class="xref">devour</code></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="Usage.html#module-devour.consumers.DevourConsumer"><code class="xref">devour.consumers.DevourConsumer</code></a></td><td>
+       <em></em></td></tr>
+   </table>
 
 
            </div>
@@ -222,13 +186,6 @@ and only done once allowing you to persist these components per process/thread.<
            </div>
           </div>
           <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="Concepts.html" class="btn btn-neutral float-right" title="Concepts" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-    </div>
   
 
   <hr/>
