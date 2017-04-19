@@ -89,6 +89,8 @@ starts the consumer and connects to Kafka in its own process.
 
 .. py:class:: DevourConsumer
 
+  .. py:module:: devour.consumers.DevourConsumer
+
   .. py:method:: digest(self, offset, *args, **kwargs)
 
   .. py:attribute:: topic
@@ -138,9 +140,70 @@ and database setup.
 Producers
 ^^^^^^^^^
 
+With devour, producers are created in similar fashion to how consumers are created. Simply
+create a producer class inherited from `Producer`, and define it's configuration. The difference
+here is how the configuration is defined. For producers configuration is done using a nested class
+you define called `ProducerConfig`. When a producer's `produce` method is called, the configuration
+is used to format and produce a message to your desired topic. The `Producer` class also provides
+a set of customizable methods to help you write logic that produces a message tailored to the event
+that is triggering it.
+
+.. py:class:: devour.producers.Producer
+
+  .. py:method:: produce(self, event=None, source=None, extras={}, context={})
+
+  .. py:method:: get_topic(self, event, source, context)
+
+  .. py:method:: get_schema(self, event, source, context)
+
+  .. py:method:: get_partition_key(self, event, source, context)
+
+  .. py:method:: _get_generic_topic(self, identifier='topic')
+
+  .. py:class:: ProducerConfig
+
+    .. py:attribute:: topic
+
+    .. py:attribute:: partition_key
+
+    .. py:attribute:: schema_class
+
+    .. py:attribute:: producer_type
+
 
 Django
 ------
+
+Using devour producers with django is extremely useful. Devour provides
+class `ProducerModel` that allows you to turn your desired models into producers. To do so
+either replace the `models.Model` inheritance with `ProducerModel` for an existing model
+or inherit from `ProducerModel` if you're writing your model from scratch. Then declare your
+nested `ProducerConfig` class with desired options. When your django app is started, devour registers two signals
+automatically: `post_save` and `post_delete`. When these signals are triggered on a model
+that inherits from the `ProducerModel` class, the `produce` method will be called. Bam,
+the current state of your model is produced to your desired topic.
+
+.. seealso::
+
+  The ProducerModel class takes all of the same parameters and has all of the same customizable
+  methods as the Producer class, so see that section for specifics.
+
+.. py:class:: devour.django.models.ModelProducer
+
+In addition to the customizable methods provided by the `Producer` class, devour's `ProducerModel` allows
+you to pass additional keyword arguments through your `save` and `delete` calls to give you control over what and
+when your producers produce messages.
+
+  **produce** (bool, default=True) - Allows you to trigger or suppress a message from your producer. If your producer config has `auto_produce` set to `True`, passing `produce=False` into `save` or `delete` will suppress messages being produced for each of those events, while passing in `produce=True` when `auto_produce` is `False` on your producer will trigger a message.
+
+  **produce_context** (dict) - Data that gets passed into each of the customizable methods provided by the `producer`. This can be helpful when making decisions within those methods and additional context about where this message is being produced from is needed.
+
+  **produce_extras** (dict) - Any extra data that you'd like to be included in the message being produced can be passed in with this dict. **Note:** Any extras that are passed in that have identical keys to fields on the model that is being produced, will override those field's values on the model.
+
+.. note::
+
+  For each message produced from the `ProducerModel`, devour will determine an `event` value (create, update, or delete)
+  and automatically add it to the message being produced.
 
 
 Schemas
