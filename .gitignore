@@ -1,3 +1,5 @@
 *.pyc
 devour.egg-info
 *.sqlite3
+build/
+dist/
