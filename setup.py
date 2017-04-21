@@ -2,12 +2,12 @@ from setuptools import setup
 
 setup(
     name='devour',
-    version='0.6',
+    version='0.6.1',
     url='',
     author='http://github.com/brandoshmando',
     author_email='brancraft@gmail.com',
     license='MIT',
-    packages=['devour', 'devour.utils', 'devour.django', 'devour.django.management.commands'],
+    packages=['devour', 'devour.utils', 'devour.django', 'devour.django.management.commands', 'devour.django.utils'],
     install_requires=['pykafka',],
     include_package_data=True,
     test_suite='nose.collector',
