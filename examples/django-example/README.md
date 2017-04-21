@@ -5,11 +5,12 @@ serve as a simple example of how devour can help you integrate kafka data stream
 
 
 ### Setup
+-
 
 The most difficult task is setting up a kafka environment locally. For this, we are going to use [docker](https://www.docker.com/)
 and [Spotify's kafka/zookeeper docker container](https://github.com/spotify/docker-kafka). So we'll do the easy stuff first...
 
-Clone devour and cd into `devour/examples/django/django-example`. Create your virtualenv and install dependencies with:
+Clone devour and cd into `devour/examples/django-example`. Create your virtualenv and install dependencies with:
 
 ```python
 pip install -r requirements.txt
@@ -56,29 +57,68 @@ export ZOOKEEPER=`docker-machine ip \`docker-machine active\``:2181
 ```
 
 For the next step, kafka's bin must be in your path. For me, it was located at `/usr/local/kafka/bin`
-You'll want two differrent topics for the example app: ``:
+You'll want two differrent topics for the example app: `test` and `math`. Run the following:
 
 `kafka-topics.sh --create --zookeeper $ZOOKEEPER --replication-factor 1 --partitions 1 --topic test`
 
-Finally, we can fire up the producer and consumer. Make sure that you are in the root folder of `devour-sample-app` in
-both of the previously opened tabs.
+`kafka-topics.sh --create --zookeeper $ZOOKEEPER --replication-factor 1 --partitions 1 --topic math`
 
-In one of the tabs, fire up the producer with:
+Now we can start the web server.
 
-```
-python src/producer.py
-```
+In one of the tabs, from the root of the project, fire up the web server:
 
-And in the other tab, fire up the consumer with:
-
-```
-devour default
+```python
+./python manage.py runserver localhost:5000
 ```
 
-Wahoo! Now in the producer tab, you can send simply by typing in your desired message and hitting enter.
-For the current `DefaultConsumer`, the message must be a json serializable dict with two keys, x and y, that have `int` values (Ex. `{"x":1, "y":3}`)
-You should see the output of the `DefaultConsumer`'s digest message, which is adding x and y.
 
-When you're ready, take a look at the [Devour readme](https://github.com/brandoshmando/devour) and make changes
-to the default consumer's settings and digest method to get a better idea of how devour helps implement your kafka setup.
-Or write your own Devour consumer!
+#### Simple message
+
+The "simple message" kafka flow is simply an interface to create a `str` message and observing how said
+message is produced automatically by devour and consumed by your consumer.
+
+To fire up the consumer, run the following in your remaining shell tab:
+
+
+```
+./python manage.py consume simple_message
+```
+
+
+Now visit http://localhost:5000/message/simple/
+
+Enter any message you like and POST. You'll see that it's contents are printed to the consumer's shell tab.
+
+Visit http://localhost:5000/message/simple/<simple message id>/
+
+PUT/PATCH to your existing message and you'll see that the updated message is printed to the consumer's shell tab.
+
+
+
+#### Math
+
+The "problems" kafka flow adds slightly more complexity. You'll create a `Problem` with a list of integers.
+The consumer will then take those integers and find the least common denominator of the set, sotring them in a
+`Solution` record.
+
+Fire up the consumer, with the following:
+
+
+```
+./python manage.py consume math
+```
+
+Visit http://localhost:5000/problems/
+
+Enter a comma separated set of integers and POST. You'll see the least common denominator and the event printed
+to your consumer tab
+
+Visit http://localhost:5000/problems/<problem id>/
+
+Change the values in your existing `Problem`, and PUT/PATCH. You'll see a the new lease common denominator and the
+event printed to your consumer tab.
+
+
+Wahoo! Devour was designed to provide you with a set of flexible tools that enable you to quickly create kafka
+workflows. There is no "standard" way to use it. Play around. Bend these tools to your will. Break things. Submit issues. All
+of this will help improve devour for everyone!
