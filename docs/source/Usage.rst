@@ -23,8 +23,8 @@ With django:
 Configuration
 -------------
 
-Devour connects to your Kafka client using settings defined by a variable named `KAFKA_CONFIG`. If you're using a pure python implementation, devour assumes that this setting is in a file called `settings.py` at the root of your application. If you're settings have a different name or location, you have the option of setting an environment variable `KAFKA_SETTINGS_PATH` that contains the path to your settings file, starting from the root of your application to the module name.
-If you're using devour with django, you should define this within whatever file is specified by `DJANGO_SETTINGS_MODULE`.
+Devour connects to your Kafka client using settings defined by a variable named `KAFKA_CONFIG`. If you're using a pure python implementation, devour assumes that this setting is in a file called `settings.py` at the root of your application. If your settings have a different name or location, you have the option of setting an environment variable `KAFKA_SETTINGS_PATH` that contains the path to your settings file, starting from the root of your application to the module name.
+If you're using devour with django, you should define this within whichever file is specified by `DJANGO_SETTINGS_MODULE`.
 
 
 .. py:data:: KAFKA_CONFIG
@@ -87,9 +87,7 @@ starts the consumer and connects to Kafka in its own process.
   Setting up your consumers also requires defining your consumer routes. See the configuration section for details
 
 
-.. py:class:: DevourConsumer
-
-  .. py:module:: devour.consumers.DevourConsumer
+.. py:class:: devour.consumers.DevourConsumer
 
   .. py:method:: digest(self, offset, *args, **kwargs)
 
@@ -152,15 +150,15 @@ that is triggering it.
 
   .. py:method:: produce(self, event=None, source=None, extras={}, context={})
 
-  .. py:method:: get_topic(self, event, source, context)
+  .. py:method:: get_topic(self, context)
 
-  .. py:method:: get_schema(self, event, source, context)
+  .. py:method:: get_schema(self, context)
 
-  .. py:method:: get_partition_key(self, event, source, context)
+  .. py:method:: get_partition_key(self, context)
 
   .. py:method:: _get_generic_topic(self, identifier='topic')
 
-  .. py:class:: ProducerConfig
+  .. py:class:: class ProducerConfig
 
     .. py:attribute:: topic
 
@@ -174,14 +172,14 @@ that is triggering it.
 Django
 ------
 
-Using devour producers with django is extremely useful. Devour provides
-class `ProducerModel` that allows you to turn your desired models into producers. To do so
+Implementing devour producers with django is extremely useful. Devour provides
+class `ProducerModel` that enables you to turn your models into producers. To do so
 either replace the `models.Model` inheritance with `ProducerModel` for an existing model
 or inherit from `ProducerModel` if you're writing your model from scratch. Then declare your
 nested `ProducerConfig` class with desired options. When your django app is started, devour registers two signals
 automatically: `post_save` and `post_delete`. When these signals are triggered on a model
 that inherits from the `ProducerModel` class, the `produce` method will be called. Bam,
-the current state of your model is produced to your desired topic.
+the current state of your model is produced to your desired topic with any extras you define.
 
 .. seealso::
 
@@ -192,23 +190,54 @@ the current state of your model is produced to your desired topic.
 
 In addition to the customizable methods provided by the `Producer` class, devour's `ProducerModel` allows
 you to pass additional keyword arguments through your `save` and `delete` calls to give you control over what and
-when your producers produce messages.
+when your producers produce messages. The available kwargs are as follows...
 
   **produce** (bool, default=True) - Allows you to trigger or suppress a message from your producer. If your producer config has `auto_produce` set to `True`, passing `produce=False` into `save` or `delete` will suppress messages being produced for each of those events, while passing in `produce=True` when `auto_produce` is `False` on your producer will trigger a message.
 
-  **produce_context** (dict) - Data that gets passed into each of the customizable methods provided by the `producer`. This can be helpful when making decisions within those methods and additional context about where this message is being produced from is needed.
+  **produce_context** (dict) - This is data that gets passed into each of the customizable methods provided by the `producer`. This can be helpful when making decisions within those methods as well as giving additional context about where this message is being produced from.
 
-  **produce_extras** (dict) - Any extra data that you'd like to be included in the message being produced can be passed in with this dict. **Note:** Any extras that are passed in that have identical keys to fields on the model that is being produced, will override those field's values on the model.
+  **produce_extras** (dict) - Any extra data that you'd like to be included in the message being produced can be passed in with this dict. **Note:** Any extras that are passed in that have identical keys to fields on the model that is being produced, will override those field's values on the model. This data will also be passed into the message regardless of what is defined on the schema.
 
 .. note::
 
   For each message produced from the `ProducerModel`, devour will determine an `event` value (create, update, or delete)
-  and automatically add it to the message being produced.
+  and automatically add it to the message being produced and the `produce_context` dict.
 
 
 Schemas
 ^^^^^^^
 
+The intention of schemas is to take in a set of data and cut it down to only the data that you want/need. This can be useful
+when formatting a message to be sent to kafka, or when consuming a large message where you only need certain parts of
+the consumed data. With devour, a schema is created by declaring a class that inherits from the base `Schema` class. From there, define a `Meta`
+class with `attributes` variable that specifies the exact attributes you'd like to be pulled from that data. Then, whenever
+you need specific attributes from a set of data, you have an explicit class that will handle that for you, simply by creating
+an instance of the schema with a payload, and accessing the `data` attribute. Devour schemas can also handle nested data.
+
+
+.. py:class:: devour.schemas.Schema
+
+  .. py:class:: ProducerConfig
+
+    .. py:class:: class Meta
+
+      .. py:attribute:: attributes
+
 
 Django
 ------
+
+Devour also provides a `ModelSchema` for use with django. This allows you to define a schema that takes a django model instance,
+and pulls whatever attributes from the model you specify. The only difference is that you must define the model that you would
+like used on the schema's meta class.
+
+
+.. py:class:: devour.django.schemas.ModelSchema
+
+  .. py:class:: ProducerConfig
+
+    .. py:class:: class Meta
+
+      .. py:attribute:: attributes
+
+      .. py:attribute:: model

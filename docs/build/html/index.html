@@ -157,15 +157,13 @@
             
   <div class="section" id="devour">
 <h1>Devour<a class="headerlink" href="#devour" title="Permalink to this headline">¶</a></h1>
-<p>Before we dive in, I want to acknowledge that Devour was built on the shoulders of giants. Those giants
-being the people at Parsely who wrote pykafka, of which this package uses a great deal of.
-If you aren&#8217;t familiar with pykafka, take some time to familiarize
-yourself as all of the low level configuration for your consumers and producers will be
-done via pykafka.</p>
+<p>Before we dive in, I want to give a shout out to the people at Parsely who wrote pykafka,
+of which this package is largely built on top of. If you aren&#8217;t familiar with pykafka, take some time to familiarize
+yourself as all of the low level configuration for your consumers and producers will be done via pykafka.</p>
 <p>Devour was created with the intention of helping
 python developers build Kafka consumers and producers in a more efficient and
 reusable way. With Devour, building your Kafka components is a simple as
-declaring a class and defining a reusable configuration. One of the key components
+declaring a class with specific configuration. One of the key components
 of devour is the ClientHandler. The ClientHandler is a &#8216;just in time&#8217; wrapper around
 the pykafka.Client class. The client isn&#8217;t configured until the first time a consumer or
 producer is fetched. After the first fetch, the client and any kafka components are
@@ -175,6 +173,7 @@ and only done once allowing you to persist these components per process/thread.<
 <div class="section" id="roadmap">
 <h2>Roadmap<a class="headerlink" href="#roadmap" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
+<li>Vast improvement of docs...</li>
 <li>Logging</li>
 <li>Python 3.x compatibility</li>
 </ul>
@@ -184,9 +183,6 @@ and only done once allowing you to persist these components per process/thread.<
 <ul class="simple">
 <li>caveat</li>
 </ul>
-</div>
-<div class="section" id="sections">
-<h2>Sections<a class="headerlink" href="#sections" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="Concepts.html">Concepts</a></li>
