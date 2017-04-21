@@ -19,8 +19,8 @@ from example import views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^message/simple/', views.SimpleMessageList.as_view(), name='simple-message-list'),
     url(r'^message/simple/(?P<pk>\d+)/', views.SimpleMessageDetail.as_view(), name='simple-message-detail'),
+    url(r'^message/simple/', views.SimpleMessageList.as_view(), name='simple-message-list'),
     url(r'^problems/(?P<pk>\d+)/', views.ProblemDetail.as_view(), name='problem-detail'),
     url(r'^problems/', views.ProblemList.as_view(), name='problem-list'),
 ]

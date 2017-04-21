@@ -67,7 +67,7 @@ Now we can start the web server.
 In one of the tabs, from the root of the project, fire up the web server:
 
 ```python
-./python manage.py runserver localhost:5000
+python manage.py runserver localhost:5000
 ```
 
 
@@ -97,24 +97,24 @@ PUT/PATCH to your existing message and you'll see that the updated message is pr
 #### Math
 
 The "problems" kafka flow adds slightly more complexity. You'll create a `Problem` with a list of integers.
-The consumer will then take those integers and find the least common denominator of the set, sotring them in a
+The consumer will then take those integers and find the least common multiple of the set, storing them in a
 `Solution` record.
 
 Fire up the consumer, with the following:
 
 
 ```
-./python manage.py consume math
+python manage.py consume problems
 ```
 
 Visit http://localhost:5000/problems/
 
-Enter a comma separated set of integers and POST. You'll see the least common denominator and the event printed
+Enter a comma separated set of integers and POST. You'll see the least common multiple and the event printed
 to your consumer tab
 
 Visit http://localhost:5000/problems/<problem id>/
 
-Change the values in your existing `Problem`, and PUT/PATCH. You'll see a the new lease common denominator and the
+Change the values in your existing `Problem`, and PUT/PATCH. You'll see a the new lease common multiple and the
 event printed to your consumer tab.
 
 
