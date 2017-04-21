@@ -5,7 +5,6 @@ serve as a simple example of how devour can help you integrate kafka data stream
 
 
 ### Setup
--
 
 The most difficult task is setting up a kafka environment locally. For this, we are going to use [docker](https://www.docker.com/)
 and [Spotify's kafka/zookeeper docker container](https://github.com/spotify/docker-kafka). So we'll do the easy stuff first...
