@@ -12,7 +12,9 @@ def produce_post_save(sender, instance=None, created=False, **kwargs):
            return False
 
         #produce logic
-        instance._produce_extras['event'] = _get_event(created=created)
+        event = _get_event(created=created)
+        instance._produce_extras['event'] = event
+        instance._produce_context['event'] = event
         instance.produce(
             instance._produce_context,
             instance._produce_extras
@@ -33,7 +35,9 @@ def produce_post_delete(sender, instance=None, created=False, **kwargs):
            return False
 
         #produce logic
-        instance._produce_extras['event'] = _get_event(created=False, deleted=True)
+        event = _get_event(created=False, deleted=True)
+        instance._produce_extras['event'] = event
+        instance._produce_context['event'] = event
         instance.produce(
             instance._produce_context,
             instance._produce_extras
