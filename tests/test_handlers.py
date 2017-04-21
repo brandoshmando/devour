@@ -1,7 +1,7 @@
 import mock
 from unittest import TestCase
 from devour.handlers import ClientHandler
-from devour.producers import _ProducerProxy
+from devour.proxies import _ProducerProxy
 from threading import local
 
 class TestClientHandler(TestCase):

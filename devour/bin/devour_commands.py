@@ -13,10 +13,9 @@ def parse_args(args):
 def main():
     parsed = parse_args(sys.argv[1:])
     if parsed.method == 'consume':
-        consume()
+        consume(parsed.consumer_name)
 
-def consume():
-    parsed = parse_args(sys.argv[1:])
+def consume(consumer_name):
     settings_path = os.environ.get('KAFKA_SETTINGS_PATH') or 'settings'
     settings = load_module(settings_path)
 
@@ -34,9 +33,9 @@ def consume():
 
     try:
         # get consumer class and instantiate
-        cls = load_consumer_class(routes[parsed.consumer_name])()
+        cls = load_consumer_class(routes[consumer_name])()
     except KeyError:
-        raise DevourConfigException("consumer class with name '{0}' not found in CONSUMER_ROUTES".format(parsed.consumer_name))
+        raise DevourConfigException("consumer class with name '{0}' not found in CONSUMER_ROUTES".format(consumer_name))
 
     # start consuming
     cls.consume()

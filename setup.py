@@ -2,16 +2,13 @@ from setuptools import setup
 
 setup(
     name='devour',
-    version='0.4.3',
+    version='0.6',
     url='',
     author='http://github.com/brandoshmando',
     author_email='brancraft@gmail.com',
     license='MIT',
-    packages=['devour', 'devour.utils'],
-    install_requires=[
-        'pykafka',
-        'kazoo'
-    ],
+    packages=['devour', 'devour.utils', 'devour.django', 'devour.django.management.commands'],
+    install_requires=['pykafka',],
     include_package_data=True,
     test_suite='nose.collector',
     tests_require=['nose'],

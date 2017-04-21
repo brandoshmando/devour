@@ -6,7 +6,7 @@ from devour.exceptions import DevourConfigException
 from devour.utils.helpers import validate_config
 from devour.utils.loaders import load_module, load_consumer_class
 from devour.validators import  CONFIG_VALIDATOR
-from devour.producers import _ProducerProxy
+from devour.proxies import _ProducerProxy
 
 
 class ClientHandler(object):
@@ -77,7 +77,7 @@ class ClientHandler(object):
 
         topic = self.get_topic(topic_name)
         try:
-            producer = getattr(topic, 'get_' + producer_type)()
+            producer = getattr(topic, 'get_' + producer_type)() # need to pass in kwargs here
         except AttributeError:
             raise DevourConfigException('producer_type {0} not one of sync_producer_consumer or produce'.format(producer_type))
 

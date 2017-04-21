@@ -1,0 +1,571 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Usage &mdash; devour 0.6 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="devour 0.6 documentation" href="index.html"/>
+        <link rel="prev" title="Concepts" href="Concepts.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> devour
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.6
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Concepts.html">Concepts</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#getting-started">Getting started</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#configuration">Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#consumers">Consumers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#django">Django</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#producers">Producers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Django</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#schemas">Schemas</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Django</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">devour</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Usage</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/Usage.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="usage">
+<h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="getting-started">
+<h2>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="installation">
+<h3>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h3>
+<p>Without django:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">devour</span> <span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">option</span><span class="o">=</span><span class="s1">&#39;--no-django&#39;</span>
+</pre></div>
+</div>
+<p>With django:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">devour</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="configuration">
+<h3>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h3>
+<p>Devour connects to your Kafka client using settings defined by a variable named <cite>KAFKA_CONFIG</cite>. If you&#8217;re using a pure python implementation, devour assumes that this setting is in a file called <cite>settings.py</cite> at the root of your application. If your settings have a different name or location, you have the option of setting an environment variable <cite>KAFKA_SETTINGS_PATH</cite> that contains the path to your settings file, starting from the root of your application to the module name.
+If you&#8217;re using devour with django, you should define this within whichever file is specified by <cite>DJANGO_SETTINGS_MODULE</cite>.</p>
+<dl class="data">
+<dt id="KAFKA_CONFIG">
+<code class="descname">KAFKA_CONFIG</code><a class="headerlink" href="#KAFKA_CONFIG" title="Permalink to this definition">¶</a></dt>
+<dd><p>The following options are validated for you when the client handler is first instantiated within a process/thread. A <cite>DevourConfigException</cite> is thrown when a validation error is encountered.</p>
+<dl class="attribute">
+<dt id="dict">
+<code class="descname">dict</code><a class="headerlink" href="#dict" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li>Contains all cluster specific settings</li>
+<li><cite>key</cite> is the attribute name and <cite>value</cite>
+is the value</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>hosts</strong> (<em>str</em>) &#8211; Comma separated list of Kafka hosts (required)</li>
+<li><strong>zookeeper_hosts</strong> (<em>str</em>) &#8211; Comma separated list of zookeeper hosts</li>
+<li><strong>ssl_config</strong> (<a class="reference internal" href="#dict" title="dict"><em>dict</em></a>) &#8211; <p>Specifies SSL config</p>
+<ul>
+<li><cite>cafile</cite> - Path to cafile within your filesystem (required)</li>
+<li><cite>certfile</cite> - Path to certfile within your filesystem</li>
+<li><cite>keyfile</cite> - Path to keyfile within your filesystem</li>
+<li><cite>password</cite> - Password corresponding to your keyfile</li>
+</ul>
+</li>
+<li><strong>socket_timeout_ms</strong> (<em>int</em>) &#8211; Amount of time (ms) before socket times out during network requests</li>
+<li><strong>offsets_channel_socket_timeout_ms</strong> (<em>int</em>) &#8211; Amount of time (ms) before socket times out while reading responses for offset commit and offset fetch requests</li>
+<li><strong>use_greenlets</strong> (<em>bool</em>) &#8211; Use greenlets vs OS threads for parallel operations</li>
+<li><strong>exclude_internal_topics</strong> (<em>bool</em>) &#8211; Whether messages from internal topics (specifically, the offsets topic) should be exposed to the consumer</li>
+<li><strong>source_address</strong> (<em>str</em>) &#8211; Source address for socket connections</li>
+<li><strong>broker_version</strong> (<em>str</em>) &#8211; The Kafka protocol version of the cluster being used. <em>Note:</em> If this version does not match the actual broker version, some feature may not work.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Also included in the config is a key called <cite>consumer_routes</cite>. This particular setting contains the routes
+to the consumers that you define.</p>
+<ul class="simple">
+<li><strong>consumer_routes (dict)</strong> <cite>key</cite> is the desired name of the consumer, and the <cite>value</cite> is the relative route from the root of your application to the declared consumer class.</li>
+</ul>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1">#...snip</span>
+<span class="s1">&#39;consumer_routes&#39;</span> <span class="p">:</span> <span class="p">{</span>
+    <span class="s1">&#39;my_consumer&#39;</span><span class="p">:</span> <span class="s1">&#39;my_proj_root.path.to.consumer_module.ConsumerClass&#39;</span>
+<span class="p">},</span>
+<span class="c1">#...snip</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="envvar">
+<dt id="envvar-KAFKA_SETTINGS_PATH">
+<code class="descname">KAFKA_SETTINGS_PATH</code><a class="headerlink" href="#envvar-KAFKA_SETTINGS_PATH" title="Permalink to this definition">¶</a></dt>
+<dd><div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">KAFKA_SETTINGS_PATH</span><span class="o">=</span><span class="s1">&#39;my_proj_root.path.to.settings_module&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="consumers">
+<h2>Consumers<a class="headerlink" href="#consumers" title="Permalink to this headline">¶</a></h2>
+<p>Building a consumer with devour is as simple as writing a class that inherits from <cite>DevourConsumer</cite> and defining
+reusable config. The crux of the consumer is the <cite>digest</cite> method. This method is the entry point where devour
+passes each message received from the Kafka topic. All of this is kicked off by running the <cite>consume</cite> command that
+starts the consumer and connects to Kafka in its own process.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last">Setting up your consumers also requires defining your consumer routes. See the configuration section for details</p>
+</div>
+<dl class="class">
+<dt id="devour.consumers.DevourConsumer">
+<em class="property">class </em><code class="descclassname">devour.consumers.</code><code class="descname">DevourConsumer</code><a class="headerlink" href="#devour.consumers.DevourConsumer" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="devour.consumers.DevourConsumer.digest">
+<code class="descname">digest</code><span class="sig-paren">(</span><em>self</em>, <em>offset</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#devour.consumers.DevourConsumer.digest" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="devour.consumers.DevourConsumer.topic">
+<code class="descname">topic</code><a class="headerlink" href="#devour.consumers.DevourConsumer.topic" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="devour.consumers.DevourConsumer.digest_name">
+<code class="descname">digest_name</code><a class="headerlink" href="#devour.consumers.DevourConsumer.digest_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="devour.consumers.DevourConsumer.consumer_type">
+<code class="descname">consumer_type</code><a class="headerlink" href="#devour.consumers.DevourConsumer.consumer_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="devour.consumers.DevourConsumer.config">
+<code class="descname">config</code><a class="headerlink" href="#devour.consumers.DevourConsumer.config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="devour.consumers.DevourConsumer.schema_class">
+<code class="descname">schema_class</code><a class="headerlink" href="#devour.consumers.DevourConsumer.schema_class" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="devour.consumers.DevourConsumer.dump_raw">
+<code class="descname">dump_raw</code><a class="headerlink" href="#devour.consumers.DevourConsumer.dump_raw" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="devour.consumers.DevourConsumer.dump_obj">
+<code class="descname">dump_obj</code><a class="headerlink" href="#devour.consumers.DevourConsumer.dump_obj" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="devour.consumers.DevourConsumer.dump_json">
+<code class="descname">dump_json</code><a class="headerlink" href="#devour.consumers.DevourConsumer.dump_json" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<p>Example</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">devour.consumers</span> <span class="kn">import</span> <span class="n">DevourConsumer</span>
+
+<span class="k">class</span> <span class="nc">ExampleConsumer</span><span class="p">(</span><span class="n">DevourConsumer</span><span class="p">):</span>
+  <span class="k">pass</span>
+</pre></div>
+</div>
+<div class="section" id="django">
+<h3>Django<a class="headerlink" href="#django" title="Permalink to this headline">¶</a></h3>
+<p>If you&#8217;re pairing devour with django, consumer syntax is the same across the board. The only
+difference is the command used start the consumer process. For that, devour includes a custom
+management command. This seems subtle, but is actually very useful. This allows you to set up
+your consumers <em>within</em> your django project, enabling you to utilize your existing django models
+and database setup.</p>
+<p><strong>Command:</strong></p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>./python manage.py consume consumer_name
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="producers">
+<h2>Producers<a class="headerlink" href="#producers" title="Permalink to this headline">¶</a></h2>
+<p>With devour, producers are created in similar fashion to how consumers are created. Simply
+create a producer class inherited from <cite>Producer</cite>, and define it&#8217;s configuration. The difference
+here is how the configuration is defined. For producers configuration is done using a nested class
+you define called <cite>ProducerConfig</cite>. When a producer&#8217;s <cite>produce</cite> method is called, the configuration
+is used to format and produce a message to your desired topic. The <cite>Producer</cite> class also provides
+a set of customizable methods to help you write logic that produces a message tailored to the event
+that is triggering it.</p>
+<dl class="class">
+<dt id="devour.producers.Producer">
+<em class="property">class </em><code class="descclassname">devour.producers.</code><code class="descname">Producer</code><a class="headerlink" href="#devour.producers.Producer" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="devour.producers.Producer.produce">
+<code class="descname">produce</code><span class="sig-paren">(</span><em>self</em>, <em>event=None</em>, <em>source=None</em>, <em>extras={}</em>, <em>context={}</em><span class="sig-paren">)</span><a class="headerlink" href="#devour.producers.Producer.produce" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="devour.producers.Producer.get_topic">
+<code class="descname">get_topic</code><span class="sig-paren">(</span><em>self</em>, <em>context</em><span class="sig-paren">)</span><a class="headerlink" href="#devour.producers.Producer.get_topic" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="devour.producers.Producer.get_schema">
+<code class="descname">get_schema</code><span class="sig-paren">(</span><em>self</em>, <em>context</em><span class="sig-paren">)</span><a class="headerlink" href="#devour.producers.Producer.get_schema" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="devour.producers.Producer.get_partition_key">
+<code class="descname">get_partition_key</code><span class="sig-paren">(</span><em>self</em>, <em>context</em><span class="sig-paren">)</span><a class="headerlink" href="#devour.producers.Producer.get_partition_key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="devour.producers.Producer._get_generic_topic">
+<code class="descname">_get_generic_topic</code><span class="sig-paren">(</span><em>self</em>, <em>identifier='topic'</em><span class="sig-paren">)</span><a class="headerlink" href="#devour.producers.Producer._get_generic_topic" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<code class="descname">class ProducerConfig</code></dt>
+<dd><dl class="attribute">
+<dt id="devour.producers.Producer.topic">
+<code class="descname">topic</code><a class="headerlink" href="#devour.producers.Producer.topic" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="devour.producers.Producer.partition_key">
+<code class="descname">partition_key</code><a class="headerlink" href="#devour.producers.Producer.partition_key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="devour.producers.Producer.schema_class">
+<code class="descname">schema_class</code><a class="headerlink" href="#devour.producers.Producer.schema_class" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="devour.producers.Producer.producer_type">
+<code class="descname">producer_type</code><a class="headerlink" href="#devour.producers.Producer.producer_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+<div class="section" id="id1">
+<h3>Django<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>Implementing devour producers with django is extremely useful. Devour provides
+class <cite>ProducerModel</cite> that enables you to turn your models into producers. To do so
+either replace the <cite>models.Model</cite> inheritance with <cite>ProducerModel</cite> for an existing model
+or inherit from <cite>ProducerModel</cite> if you&#8217;re writing your model from scratch. Then declare your
+nested <cite>ProducerConfig</cite> class with desired options. When your django app is started, devour registers two signals
+automatically: <cite>post_save</cite> and <cite>post_delete</cite>. When these signals are triggered on a model
+that inherits from the <cite>ProducerModel</cite> class, the <cite>produce</cite> method will be called. Bam,
+the current state of your model is produced to your desired topic with any extras you define.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last">The ProducerModel class takes all of the same parameters and has all of the same customizable
+methods as the Producer class, so see that section for specifics.</p>
+</div>
+<dl class="class">
+<dt id="devour.django.models.ModelProducer">
+<em class="property">class </em><code class="descclassname">devour.django.models.</code><code class="descname">ModelProducer</code><a class="headerlink" href="#devour.django.models.ModelProducer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>In addition to the customizable methods provided by the <cite>Producer</cite> class, devour&#8217;s <cite>ProducerModel</cite> allows
+you to pass additional keyword arguments through your <cite>save</cite> and <cite>delete</cite> calls to give you control over what and
+when your producers produce messages. The available kwargs are as follows...</p>
+<blockquote>
+<div><p><strong>produce</strong> (bool, default=True) - Allows you to trigger or suppress a message from your producer. If your producer config has <cite>auto_produce</cite> set to <cite>True</cite>, passing <cite>produce=False</cite> into <cite>save</cite> or <cite>delete</cite> will suppress messages being produced for each of those events, while passing in <cite>produce=True</cite> when <cite>auto_produce</cite> is <cite>False</cite> on your producer will trigger a message.</p>
+<p><strong>produce_context</strong> (dict) - This is data that gets passed into each of the customizable methods provided by the <cite>producer</cite>. This can be helpful when making decisions within those methods as well as giving additional context about where this message is being produced from.</p>
+<p><strong>produce_extras</strong> (dict) - Any extra data that you&#8217;d like to be included in the message being produced can be passed in with this dict. <strong>Note:</strong> Any extras that are passed in that have identical keys to fields on the model that is being produced, will override those field&#8217;s values on the model. This data will also be passed into the message regardless of what is defined on the schema.</p>
+</div></blockquote>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">For each message produced from the <cite>ProducerModel</cite>, devour will determine an <cite>event</cite> value (create, update, or delete)
+and automatically add it to the message being produced and the <cite>produce_context</cite> dict.</p>
+</div>
+</div>
+</div>
+<div class="section" id="schemas">
+<h2>Schemas<a class="headerlink" href="#schemas" title="Permalink to this headline">¶</a></h2>
+<p>The intention of schemas is to take in a set of data and cut it down to only the data that you want/need. This can be useful
+when formatting a message to be sent to kafka, or when consuming a large message where you only need certain parts of
+the consumed data. With devour, a schema is created by declaring a class that inherits from the base <cite>Schema</cite> class. From there, define a <cite>Meta</cite>
+class with <cite>attributes</cite> variable that specifies the exact attributes you&#8217;d like to be pulled from that data. Then, whenever
+you need specific attributes from a set of data, you have an explicit class that will handle that for you, simply by creating
+an instance of the schema with a payload, and accessing the <cite>data</cite> attribute. Devour schemas can also handle nested data.</p>
+<dl class="class">
+<dt id="devour.schemas.Schema">
+<em class="property">class </em><code class="descclassname">devour.schemas.</code><code class="descname">Schema</code><a class="headerlink" href="#devour.schemas.Schema" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="class">
+<dt id="devour.schemas.Schema.ProducerConfig">
+<em class="property">class </em><code class="descname">ProducerConfig</code><a class="headerlink" href="#devour.schemas.Schema.ProducerConfig" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="class">
+<dt>
+<code class="descname">class Meta</code></dt>
+<dd><dl class="attribute">
+<dt id="devour.schemas.Schema.ProducerConfig.attributes">
+<code class="descname">attributes</code><a class="headerlink" href="#devour.schemas.Schema.ProducerConfig.attributes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+<div class="section" id="id2">
+<h3>Django<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>Devour also provides a <cite>ModelSchema</cite> for use with django. This allows you to define a schema that takes a django model instance,
+and pulls whatever attributes from the model you specify. The only difference is that you must define the model that you would
+like used on the schema&#8217;s meta class.</p>
+<dl class="class">
+<dt id="devour.django.schemas.ModelSchema">
+<em class="property">class </em><code class="descclassname">devour.django.schemas.</code><code class="descname">ModelSchema</code><a class="headerlink" href="#devour.django.schemas.ModelSchema" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="class">
+<dt id="devour.django.schemas.ModelSchema.ProducerConfig">
+<em class="property">class </em><code class="descname">ProducerConfig</code><a class="headerlink" href="#devour.django.schemas.ModelSchema.ProducerConfig" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="class">
+<dt>
+<code class="descname">class Meta</code></dt>
+<dd><dl class="attribute">
+<dt id="devour.django.schemas.ModelSchema.ProducerConfig.attributes">
+<code class="descname">attributes</code><a class="headerlink" href="#devour.django.schemas.ModelSchema.ProducerConfig.attributes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="devour.django.schemas.ModelSchema.ProducerConfig.model">
+<code class="descname">model</code><a class="headerlink" href="#devour.django.schemas.ModelSchema.ProducerConfig.model" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="Concepts.html" class="btn btn-neutral" title="Concepts" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Brandon Craft.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.6',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
